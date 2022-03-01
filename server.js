@@ -9,6 +9,13 @@ import app from './app.js';
 // console.log(process.env);
 // you can add enviroment variables to the process module
 
+// *************** UNCAUGHT EXCEPTION ***************
+process.on('uncaughtException', (err) => {
+  console.log('UNCAUGHT EXCEPTION! Shutting down...');
+  console.log(err.name, err.message);
+  process.exit(1);
+});
+
 // *************** DATABASE ****************
 
 const DB = process.env.DATABASE.replace(
@@ -34,4 +41,17 @@ mongoose
 // ************ SERVER *************
 
 const port = 3000;
-app.listen(port, 'localhost', () => console.log('Server started.'));
+const server = app.listen(port, 'localhost', () =>
+  console.log('Server started.')
+);
+
+// UNHANDLED REJECTS
+
+process.on('unhandledRejection', (err) => {
+  console.log('UNHANDLED REJECTION! Shutting down...');
+  console.log(err.name, err.message);
+  // This will give the server time to close any pending request before shutting down.
+  server.close(() => {
+    process.exit(1);
+  });
+});
