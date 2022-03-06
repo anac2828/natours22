@@ -15,6 +15,11 @@ const userSchema = new mongoose.Schema({
     validate: [validator.isEmail, 'Please provide a valid email.'],
   },
   photo: String,
+  role: {
+    type: String,
+    default: 'user',
+    enum: ['user', 'guide', 'lead-guide', 'admin'],
+  },
   password: {
     type: String,
     require: [true, 'Please provide a password.'],
@@ -68,7 +73,6 @@ userSchema.methods.checkPassChangedAfterToken = function (JWTTimestamp) {
     //true - password was changed // 100 < 200
     return JWTTimestamp < passwordTimeStamp;
   }
-  console.log(passwordTimeStamp, JWTTimestamp);
   // False not changed
   return false;
 };

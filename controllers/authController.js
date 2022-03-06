@@ -22,6 +22,7 @@ export const signup = catchAsync(async (req, res, next) => {
     password: req.body.password,
     passwordConfirm: req.body.passwordConfirm,
     passwordChangedAt: req.body.passwordChangedAt,
+    role: req.body.role || 'user',
   });
 
   const token = signToken(newUser._id);
@@ -30,7 +31,6 @@ export const signup = catchAsync(async (req, res, next) => {
 });
 
 export const login = catchAsync(async (req, res, next) => {
-  console.log(req.body);
   const { email, password } = req.body;
 
   // check if there is a password and email
@@ -91,3 +91,15 @@ export const protect = catchAsync(async (req, res, next) => {
   req.user = currentUser;
   next();
 });
+
+// this works be because of 'closures'. restrictTo returns a function and the returned function has access to the "...roles" array
+export const restrictTo = (...roles) => {
+  return (req, res, next) => {
+    console.log(roles);
+    if (!roles.includes(req.user.role))
+      return next(
+        new AppError("You don't have permission for this action", 403)
+      );
+    next();
+  };
+};
