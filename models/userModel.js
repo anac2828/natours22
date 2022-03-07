@@ -1,3 +1,5 @@
+// crypto is a build it node module
+import crypto from 'crypto';
 import mongoose from 'mongoose';
 import validator from 'validator';
 import bcrypt from 'bcrypt';
@@ -79,3 +81,11 @@ userSchema.methods.checkPassChangedAfterToken = function (JWTTimestamp) {
 
 const User = new mongoose.model('User', userSchema);
 export default User;
+
+// ********* PASSWORD RESET *********
+
+userSchema.methods.createPasswordResetToken = () => {
+  //use build in node module to create random string
+  const resetToken = crypto.randomBytes(32).toString('Hex');
+  console.log(resetToken);
+};

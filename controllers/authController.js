@@ -103,3 +103,13 @@ export const restrictTo = (...roles) => {
     next();
   };
 };
+
+export const forgotPassword = (req, res, next) => {
+  // Get user with email
+  const user = await User.findOne({ email: req.email });
+
+  if (!user)
+    return next(new AppError('There is no user with that email address.', 404));
+  //Generate random reset token
+};
+export const resetPassword = (req, res, next) => {};
