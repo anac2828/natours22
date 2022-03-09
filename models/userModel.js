@@ -42,9 +42,11 @@ const userSchema = new mongoose.Schema({
     },
   },
   passwordChangedAt: Date,
+  passwordResetToken: String,
+  passwordResetExpires: Date,
 });
 
-// MIDDLEWARE
+// ******************** MIDDLEWARE
 
 userSchema.pre('save', async function (next) {
   // "this" is the current document. If the password is not modified code the next middleware will run.
@@ -55,6 +57,15 @@ userSchema.pre('save', async function (next) {
 
   // Setting the passwordConfirm to undefined will be deleted from the data. We only need this field for password validation
   this.passwordConfirm = undefined;
+  next();
+});
+
+userSchema.pre('save', function (next) {
+  // If the password is not modified or the document is new, the next middleware will run.
+  if (!this.isModified('password') || this.isNew) return next();
+
+  //set the passwordChanged at time one second in the past to the token will be
+  this.passwordChangedAt = Date.now() - 1000;
   next();
 });
 
@@ -79,13 +90,24 @@ userSchema.methods.checkPassChangedAfterToken = function (JWTTimestamp) {
   return false;
 };
 
-const User = new mongoose.model('User', userSchema);
-export default User;
-
 // ********* PASSWORD RESET *********
 
-userSchema.methods.createPasswordResetToken = () => {
+userSchema.methods.createPasswordResetToken = function () {
   //use build in node module to create random string
   const resetToken = crypto.randomBytes(32).toString('Hex');
-  console.log(resetToken);
+
+  // safe encrypted token to database
+  this.passwordResetToken = crypto
+    .createHash('sha256')
+    .update(resetToken)
+    .digest('hex');
+
+  //Token expires in 10 minutes
+  this.passwordResetExpires = Date.now() + 10 * 60 * 1000;
+
+  //This will be send to user
+  return resetToken;
 };
+
+const User = new mongoose.model('User', userSchema);
+export default User;

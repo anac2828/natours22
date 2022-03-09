@@ -5,10 +5,21 @@ const router = express.Router();
 
 // ********** ROUTES
 
+// AUTH ROUTES
 router.post('/signup', authController.signup);
 // It is a post request because we are sending the token
 router.post('/login', authController.login);
-router.post('/resetpassword', authController.forgotPassword);
+router.post('/forgotpassword', authController.forgotPassword);
+router.patch('/resetpassword/:token', authController.resetPassword);
+router.patch(
+  '/updatepassword',
+  authController.protect,
+  authController.updatePassword
+);
+
+// LOGGED IN USER ROUTES
+
+router.patch('/updatemydata', authController.protect, userController.updateMe);
 
 // - RESTFUL ROUTES
 router
