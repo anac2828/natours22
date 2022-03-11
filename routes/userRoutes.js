@@ -20,11 +20,16 @@ router.patch(
 // LOGGED IN USER ROUTES
 
 router.patch('/updatemydata', authController.protect, userController.updateMe);
+router.delete(
+  '/deletemyaccount',
+  authController.protect,
+  userController.deleteAccount
+);
 
 // - RESTFUL ROUTES
 router
   .route('/')
-  .get(authController.protect, userController.getAllUsers)
+  .get(userController.getAllUsers)
   .post(userController.createUser);
 router
   .route('/:id')

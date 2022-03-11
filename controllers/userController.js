@@ -36,12 +36,19 @@ export const updateMe = catchAsync(async (req, res, next) => {
   res.status(200).json({ status: 'success', data: { user: updatedUser } });
 });
 
+export const deleteAccount = catchAsync(async (req, res, next) => {
+  await User.findByIdAndUpdate(req.user.id, { active: false });
+
+  res.status(204).json({ status: 'success', data: null });
+});
+
 // ************* USER ROUTE HANDLERS ***************
 
 export const getAllUsers = catchAsync(async (req, res, next) => {
   const users = await User.find();
+  // const users = await User.find({ active: { $ne: false } });
 
-  res.status(500).json({
+  res.status(200).json({
     status: 'success',
     results: users.length,
     data: { users },

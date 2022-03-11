@@ -88,6 +88,7 @@ export const getAllTours = catchAsync(async (req, res) => {
 });
 
 export const getTour = catchAsync(async (req, res, next) => {
+  console.log(req.params.id);
   const tour = await Tour.findById(req.params.id);
   // creates an error object that will be received in the app.use errorhandler middleware and the errorController will be called to display the error in postman
   if (!tour) return next(new AppError('No tour with that ID', 404));

@@ -10,9 +10,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // READ DATA
-const tours = JSON.parse(
-  readFileSync(`${__dirname}/tours-simple.json`, 'utf-8')
-);
+const tours = JSON.parse(readFileSync(`${__dirname}/tours.json`, 'utf-8'));
 
 mongoose.connect(
   'mongodb+srv://ana:natours2828@nodejs.viihm.mongodb.net/NodeJS?retryWrites=true&w=majority',

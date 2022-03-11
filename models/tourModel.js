@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 import slugify from 'slugify';
 import validator from 'validator';
+// import User from './userModel.js';
 
 const tourSchema = new mongoose.Schema(
   {
@@ -91,7 +92,42 @@ const tourSchema = new mongoose.Schema(
         message: 'Discount price ({VALUE}) should be below regular price.',
       },
     },
+    startLocation: {
+      // GeoJSON object
+      type: {
+        type: String,
+        default: 'Point',
+        enum: ['Point'],
+      },
+      coordinates: [Number],
+      address: String,
+      description: String,
+    },
+    // Data needs to be embeded in an array
+    locations: [
+      {
+        type: {
+          type: String,
+          default: 'Point',
+          enum: ['Point'],
+        },
+        coordinates: [Number],
+        address: String,
+        description: String,
+        day: Number,
+      },
+    ],
+    //EMBEDDED USER
+    // guides: Array,
+    // REFERENCE
+    guides: [
+      {
+        type: mongoose.Schema.ObjectId,
+        ref: 'User',
+      },
+    ],
   },
+
   {
     // when data is send as json or an object the virtual fields will be set on the documents
     toJSON: { virtuals: true },
@@ -115,12 +151,22 @@ tourSchema.pre('save', function () {
   this.slug = slugify(this.name);
 });
 
+// •••••For Embedding guides
+// tourSchema.pre('save', async function (next) {
+//   // return an  array of promises
+//   const guidesPromises = this.guides.map(async (id) => await User.findById(id));
+//   // sets the this.guides to the data from guidesPromises
+//   this.guides = await Promise.all(guidesPromises);
+//   next();
+// });
+
 // tourSchema.post('save', function (doc, next) {
 //   // The 'this' keyword is not available on .post() but the saved document is.
 //   console.log(doc);
 // });
 
-// Query
+// ********** QUERY MIDDLEWARE
+// QUERY
 // The "this" keyword points to the query and not a document
 //use a regExp to add the findOne query
 tourSchema.pre(/^find/, function (next) {
@@ -131,12 +177,23 @@ tourSchema.pre(/^find/, function (next) {
   next();
 });
 
+tourSchema.pre(/^find/, function (next) {
+  // "this" points to the query
+  this.populate({
+    path: 'guides',
+    select: '-v -passwordChangedAt',
+  });
+
+  next();
+});
+
 tourSchema.post(/^find/, function (docs, next) {
   console.log(`Query took ${Date.now() - this.start} milliseconds`);
   // console.log(docs);
   next();
 });
-// Aggregate
+
+// AGGREGATE
 
 tourSchema.pre('aggregate', function (next) {
   // will add a match state at beggining of aggregate pipeline

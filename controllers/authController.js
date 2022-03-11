@@ -8,17 +8,36 @@ import sendEmail from '../utils/email.js';
 
 // Will create a signature token to send to the user when they login or signup
 const signToken = (id) => {
-  // jwt.sign() will create a signature everytime a user logsin
+  // jwt.sign() will create a signature everytime a user logs in
   // ** params - payload // secretKey // options // callback
   return jwt.sign({ id }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_IN,
   });
 };
 
+const cookieOptions = {
+  expires: new Date(
+    Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
+  ),
+  // will only send the cookie over an https request
+
+  // will prevent the browser from modifying the cookie. It will prevent cross-site attacks
+  httpOnly: true,
+};
+
+if (process.env.NODE_DEV === 'production') cookiesOptions.secure = true;
+
 const createNSendToken = (user, statusCode, res) => {
   const token = signToken(user._id);
+  // create and send a cookie to browser. Expires in 90 days (converted to milliseconds). The cookie is the token
+  res.cookie('jwt', token, cookieOptions);
+
+  // remove password from output
+  user.password = undefined;
   res.status(statusCode).json({ status: 'success', token, data: { user } });
 };
+
+// ******** SIGN UP AND LOG IN ************
 
 export const signup = catchAsync(async (req, res, next) => {
   // SECURITY BUG - Don't use this code. A user could sign up as an admin
@@ -58,6 +77,8 @@ export const login = catchAsync(async (req, res, next) => {
 
   createNSendToken(user, 200, res);
 });
+
+// ******** PROTECT ************
 
 export const protect = catchAsync(async (req, res, next) => {
   // Getting token from headers
@@ -106,7 +127,6 @@ export const protect = catchAsync(async (req, res, next) => {
 // this works be because of 'closures'. restrictTo returns a function and the returned function has access to the "...roles" array
 export const restrictTo = (...roles) => {
   return (req, res, next) => {
-    console.log(roles);
     if (!roles.includes(req.user.role))
       return next(
         new AppError("You don't have permission for this action", 403)
@@ -115,7 +135,7 @@ export const restrictTo = (...roles) => {
   };
 };
 
-// ********** PASSWORD RESET
+// ********** PASSWORD RESET **********
 export const forgotPassword = catchAsync(async (req, res, next) => {
   // Get user with email
   const user = await User.findOne({ email: req.body.email });
