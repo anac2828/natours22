@@ -142,6 +142,13 @@ tourSchema.virtual('durationWeeks').get(function () {
   return this.duration / 7;
 });
 
+// Virtual populate - this will be implemented on one tour not get all tours. This allows us to keep a child reference without persisting the
+tourSchema.virtual('reviews', {
+  ref: 'Review',
+  foreignField: 'tour',
+  localField: '_id',
+});
+
 // ********** MONGOOSE MIDDLEWARE
 //  !!!!!!!! Make sure this code: const Tour = new mongoose.model('Tour', tourSchema); is after the middleware !!!!!!!!
 
