@@ -1,26 +1,30 @@
 import nodemailer from 'nodemailer';
+import catchAsync from './catchAsync.js';
 
-const sendEmail = (options) => {
-  // Create transporter
+const sendEmail = catchAsync(async (options) => {
+  // Create a transporter
   const transporter = nodemailer.createTransport({
+    // service: 'Gmail',
     host: process.env.EMAIL_HOST,
     port: process.env.EMAIL_PORT,
     auth: {
-      user: process.env.EMAIL_USER,
+      user: process.env.EMAIL_USERNAME,
       pass: process.env.EMAIL_PASSWORD,
     },
+    // Activate in gmail 'less secure app' aption
   });
 
-  // Mail options
-  const options = {
-    from: 'Ana Cervantes <admin@jonas-3.io>',
+  // Define the email options
+  const mailOptions = {
+    from: 'Jonas Schmedtmann <hello@jonas.io',
     to: options.email,
     subject: options.subject,
     text: options.message,
   };
 
-  // Send email with transporter
-  transporter.sendEmail();
-};
+  // Actually send the email
+  // transporter will return a promise
+  await transporter.sendMail(mailOptions);
+});
 
 export default sendEmail;
