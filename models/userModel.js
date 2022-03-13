@@ -42,6 +42,8 @@ const userSchema = new mongoose.Schema({
     },
   },
   passwordChangedAt: Date,
+  passwordResetToken: String,
+  passwordRestExpire: Date,
 });
 
 // MIDDLEWARE
@@ -79,13 +81,23 @@ userSchema.methods.checkPassChangedAfterToken = function (JWTTimestamp) {
   return false;
 };
 
-const User = new mongoose.model('User', userSchema);
-export default User;
-
 // ********* PASSWORD RESET *********
 
-userSchema.methods.createPasswordResetToken = () => {
-  //use build in node module to create random string
+userSchema.methods.createPasswordResetToken = function () {
+  //use build in node module to create random string. Non encrypted token that will be send to user.
   const resetToken = crypto.randomBytes(32).toString('Hex');
-  console.log(resetToken);
+
+  // Encrypeted token saved to database
+  this.passwordResetToken = crypto
+    .createHash('sha256')
+    .update(resetToken)
+    .digest('hex');
+
+  // Token expires in 10 minutes
+  this.passwordRestExpire = Date.now() + 10 * 60 * 1000;
+
+  return resetToken;
 };
+
+const User = new mongoose.model('User', userSchema);
+export default User;

@@ -3,6 +3,7 @@ import jwt from 'jsonwebtoken';
 import User from '../models/userModel.js';
 import catchAsync from '../utils/catchAsync.js';
 import AppError from '../utils/appError.js';
+import sendEmail from '../utils/email.js';
 
 // Will create a signature token to send to the user when they login or signup
 const signToken = (id) => {
@@ -106,10 +107,14 @@ export const restrictTo = (...roles) => {
 
 export const forgotPassword = (req, res, next) => {
   // Get user with email
-  const user = await User.findOne({ email: req.email });
+  const user = await User.findOne({ email: req.body.email });
 
   if (!user)
     return next(new AppError('There is no user with that email address.', 404));
+
   //Generate random reset token
+  const token = user.createPasswordResetToken();
+
+  const requestURL = ``;
 };
 export const resetPassword = (req, res, next) => {};
