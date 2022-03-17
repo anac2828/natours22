@@ -40,6 +40,8 @@ const tourSchema = new mongoose.Schema(
       // validator
       min: [1, 'Rating must be above 1'],
       max: [5, 'Rating must be below 5'],
+      // will round the ratingsAverage everytime a new value is set (When a new review is created or deleted).
+      set: (val) => Math.round(val * 10) / 10, //.round rounds values to intergers (4.666 will be rounded to 5). The solution is to multiply by ten then divede by 10 (4.6666 * 10 46.666 will be rounded to 47 /10 = 4.7.
     },
     ratingsQuantity: {
       type: Number,
