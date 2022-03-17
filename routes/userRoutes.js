@@ -5,26 +5,28 @@ const router = express.Router();
 
 // ********** ROUTES
 
-// AUTH ROUTES
+// USER AUTH ROUTES
 router.post('/signup', authController.signup);
 // It is a post request because we are sending the token
 router.post('/login', authController.login);
 router.post('/forgotpassword', authController.forgotPassword);
 router.patch('/resetpassword/:token', authController.resetPassword);
-router.patch(
-  '/updatepassword',
-  authController.protect,
-  authController.updatePassword
-);
+
+// This will protect all routes below so that you don't have to put it on all routes
+// Middleware
+router.use(authController.protect);
+//
+
+router.patch('/updatepassword', authController.updatePassword);
 
 // LOGGED IN USER ROUTES
+router.get('/me', userController.getMe, userController.getUser);
 
-router.patch('/updatemydata', authController.protect, userController.updateMe);
-router.delete(
-  '/deletemyaccount',
-  authController.protect,
-  userController.deleteAccount
-);
+router.patch('/updatemydata', userController.updateMe);
+router.delete('/deletemyaccount', userController.deleteAccount);
+
+// ROUTES FOR ADMIN
+router.use(authController.restrictTo('admin'));
 
 // - RESTFUL ROUTES
 router

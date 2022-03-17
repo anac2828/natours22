@@ -1,6 +1,7 @@
 import User from '../models/userModel.js';
 import catchAsync from '../utils/catchAsync.js';
 import AppError from '../utils/appError.js';
+import * as factory from './handlerFactory.js';
 
 const filterObj = (obj, ...allowedFields) => {
   // ...allowedFields will be an array
@@ -12,6 +13,13 @@ const filterObj = (obj, ...allowedFields) => {
   return newObj;
 };
 
+// MIDDLEWARE
+// set the user id to req.params.id for the factory.getOne() to work
+export const getMe = (req, res, next) => {
+  req.params.id = req.user.id;
+  next();
+};
+
 // ********** UPDATE LOGGED IN USER INFO BY USER **********
 export const updateMe = catchAsync(async (req, res, next) => {
   //Create error if user try to update passwords in this route
@@ -21,9 +29,9 @@ export const updateMe = catchAsync(async (req, res, next) => {
       new AppError('Please go to /updatepassword to update your password.', 404)
     );
 
-  // filter for not allowed fields to update
+  // filter for not allowed fields to update by user
   const filteredData = filterObj(req.body, 'name', 'email');
-  console.log(filteredData);
+
   //UPDATE USER DOCUMENT
   // use findByIdAndUpdate for updating non sensitive data.
   const updatedUser = await User.findByIdAndUpdate(req.user.id, filteredData, {
@@ -31,7 +39,6 @@ export const updateMe = catchAsync(async (req, res, next) => {
     new: true,
     runValidators: true,
   });
-  console.log(req.user.id);
 
   res.status(200).json({ status: 'success', data: { user: updatedUser } });
 });
@@ -44,38 +51,15 @@ export const deleteAccount = catchAsync(async (req, res, next) => {
 
 // ************* USER ROUTE HANDLERS ***************
 
-export const getAllUsers = catchAsync(async (req, res, next) => {
-  const users = await User.find();
-  // const users = await User.find({ active: { $ne: false } });
+export const getAllUsers = factory.getAll(User);
+export const getUser = factory.getOne(User);
 
-  res.status(200).json({
-    status: 'success',
-    results: users.length,
-    data: { users },
-  });
-});
-
-export const getUser = (req, res) => {
-  res.status(500).json({
-    status: 'error',
-    message: 'This route is not yer defined',
-  });
-};
 export const createUser = (req, res) => {
   res.status(500).json({
     status: 'error',
-    message: 'This route is not yer defined',
+    message: 'This route is not yer defined! Please use /signup instead.',
   });
 };
-export const updateUser = (req, res) => {
-  res.status(500).json({
-    status: 'error',
-    message: 'This route is not yer defined',
-  });
-};
-export const deleteUser = (req, res) => {
-  res.status(500).json({
-    status: 'error',
-    message: 'This route is not yer defined',
-  });
-};
+
+export const updateUser = factory.updateOne(User);
+export const deleteUser = factory.deleteOne(User);

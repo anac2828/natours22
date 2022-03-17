@@ -135,6 +135,14 @@ const tourSchema = new mongoose.Schema(
   }
 );
 
+// INDEXES - create indexes for better mongodb performance
+// 1 = ascending order -1 descending
+// Single field index
+// tourSchema.index({ price: 1 });
+// Compound index
+tourSchema.index({ price: 1, ratingsAverage: -1 });
+tourSchema.index({ slug: 1 });
+
 // VIRTUAL PROPERTIES
 
 tourSchema.virtual('durationWeeks').get(function () {
@@ -205,7 +213,7 @@ tourSchema.post(/^find/, function (docs, next) {
 tourSchema.pre('aggregate', function (next) {
   // will add a match state at beggining of aggregate pipeline
   this.pipeline().unshift({ $match: { secretTour: false } });
-  console.log(this.pipeline());
+
   next();
 });
 // Model

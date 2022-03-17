@@ -7,7 +7,6 @@ const tours = JSON.parse(
 
 // MIDDLEWARE Handler for use in the tourRoute.js
 exports.checkID = (req, res, next, val) => {
-  console.log(`Tour ID is: ${val}`);
   if (+req.params.id > tours.length) {
     return res.status(404).json({
       status: 'fail',
@@ -18,7 +17,6 @@ exports.checkID = (req, res, next, val) => {
 };
 
 exports.checkBody = (req, res, next) => {
-  console.log(req.body);
   if (!req.body.name || !req.body.price) {
     return res.status(400).json({
       status: 'fail',
