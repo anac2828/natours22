@@ -10,12 +10,22 @@ import morgan from 'morgan';
 import tourRouter from './routes/tourRoutes.js';
 import userRouter from './routes/userRoutes.js';
 import reviewRouter from './routes/reviewRoutes.js';
+import viewRouter from './routes/viewRoutes.js';
 import AppError from './utils/appError.js';
 import globalErrorHandler from './controllers/errorController.js';
 
 const __dirname = path.resolve();
 
 const app = express();
+
+// ********** VIEW ENGINE
+app.set('view engine', 'pug');
+app.set('views', `${__dirname}/views`);
+
+// // // // // // // // // // // SERVING STATIC FILES
+// Gives access to the public folder in the url. The public folder is the root folder. It will only work for static files and will not go into subfolders.
+//http://localhost:3000/overview.html
+app.use(express.static(`${__dirname}/public`));
 
 // **************************** GLOBAL MIDDLEWARE
 //
@@ -60,11 +70,6 @@ app.use(
   })
 );
 
-// // // // // // // // // // // SERVING STATIC FILES
-// Gives access to the public folder in the url. The public folder is the root folder. It will only work for static files and will not go into subfolders.
-//http://localhost:3000/overview.html
-app.use(express.static(`${__dirname}/public`));
-
 // // // // // // // // // // //
 // applies to every route because a route was not specified and it comes before the route handler
 app.use((req, res, next) => {
@@ -74,6 +79,9 @@ app.use((req, res, next) => {
 });
 
 // ********************* ROUTES MIDDLEWARE
+
+// FRONT END ROUTE
+app.use('/', viewRouter);
 
 // Middleware for tours route
 // When there is request for the tours route the tourRouter sub application will run.

@@ -12,6 +12,71 @@ export const aliasTopTours = (req, res, next) => {
   next();
 };
 
+// '/tours-within/:distance/center/:latlng/unit/:unit';
+export const getToursWithin = catchAsync(async (req, res, next) => {
+  const { distance, latlng, unit } = req.params;
+  const [lat, lng] = latlng.split(',');
+
+  // to get the radiance you divide the distance by the earth's radius in miles or distance by earth's radius in km
+  const radiance = unit === 'mi' ? distance / 3963.2 : distance / 6378.1;
+
+  if (!lat || !lng)
+    next(
+      AppError(
+        'Please provide a latitude and longitude in the format lat, lng.',
+        400
+      )
+    );
+  // startLocation is where the tour is located. $geoWithin will earch for tours within a certain radius. $centerSphere takes an array of lng, lat where to start the search and the radius is the distance in miles or km
+  const tours = await Tour.find({
+    startLocation: { $geoWithin: { $centerSphere: [[lng, lat], radiance] } },
+  });
+
+  res
+    .status(200)
+    .json({ status: 'success', results: tours.length, data: { Tour: tours } });
+});
+
+// '/distances/:latlng/unit/:unit'
+export const getDistances = catchAsync(async (req, res, next) => {
+  const { latlng, unit } = req.params;
+  const [lat, lng] = latlng.split(',');
+
+  const multiplier = unit === 'mi' ? 0.000621371 : 0.001;
+
+  if (!lat || !lng)
+    next(
+      AppError(
+        'Please provide a latitude and longitude in the format lat, lng.',
+        400
+      )
+    );
+
+  const distances = await Tour.aggregate([
+    {
+      $geoNear: {
+        // near is the point from which to calculate the distances between the near point and the startLocation of the tours
+        near: { type: 'Point', coordinates: [+lng, +lat] },
+        // all calculated distances will be store here
+        distanceField: 'distance',
+        // will conver to miles or km
+        distanceMultiplier: multiplier,
+      },
+    },
+    {
+      $project: {
+        // field in the geoNear stage
+        distance: 1,
+        name: 1,
+        // this is so project works since we are using an aggregae middleware in the tourmodel
+        secretTour: 1,
+      },
+    },
+  ]);
+
+  res.status(200).json({ status: 'success', data: { distances } });
+});
+
 // ************* TOUR ROUTE HANDLERS ***************
 export const getAllTours = factory.getAll(Tour);
 export const getTour = factory.getOne(Tour, { path: 'reviews' });
@@ -28,7 +93,7 @@ export const deleteTour = factory.deleteOne(Tour);
 //   res.status(204).json({ status: 'success', message: 'Tour deleted' });
 // });
 
-// MONGODB AGGREGATION
+// ************** MONGODB AGGREGATION
 
 export const getTourStats = catchAsync(async (req, res) => {
   const stats = await Tour.aggregate([

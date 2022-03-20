@@ -25,11 +25,11 @@ const router = express.Router();
 // MIDDLEWARE - this route will be redirected to the viewRouter
 router.use('/:tourId/reviews', reviewRouter);
 
+//********* ROUTES
 router
   .route('/top-5-cheap')
   .get(tourController.aliasTopTours, tourController.getAllTours);
 
-// ROUTES
 // The "/" is the root of the tours url
 router.route('/tour-stats').get(tourController.getTourStats);
 router
@@ -40,6 +40,15 @@ router
     tourController.getMonthlyPlan
   );
 
+// ** GEO SPACIAL ROUTES
+router
+  .route('/tours-within/:distance/center/:latlng/unit/:unit')
+  .get(tourController.getToursWithin);
+
+// will calculate the distance of all routes from a starting point
+router.route('/distances/:latlng/unit/:unit').get(tourController.getDistances);
+
+//********* RESTFUL ROUTES
 router
   .route('/')
   .get(tourController.getAllTours)

@@ -144,6 +144,7 @@ const tourSchema = new mongoose.Schema(
 // Compound index
 tourSchema.index({ price: 1, ratingsAverage: -1 });
 tourSchema.index({ slug: 1 });
+tourSchema.index({ startLocation: '2dsphere' });
 
 // VIRTUAL PROPERTIES
 
@@ -210,12 +211,13 @@ tourSchema.post(/^find/, function (docs, next) {
   next();
 });
 
-// AGGREGATE
+// // ********** AGGREGATE MIDDLEWARE
 
 tourSchema.pre('aggregate', function (next) {
   // will add a match state at beggining of aggregate pipeline
-  this.pipeline().unshift({ $match: { secretTour: false } });
+  this.pipeline().push({ $match: { secretTour: false } });
 
+  console.log(this.pipeline());
   next();
 });
 // Model
