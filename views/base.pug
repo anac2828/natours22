@@ -1,12 +1,13 @@
 doctype html
 html 
-  head 
-  title Natours | #{title}
+  head
+    block head
+      title Natours | #{title}
 
-  link(href='https://fonts.googleapis.com/css?family=Lato:300,300i,700' rel='stylesheet')
-  //- css/styles and img/ are in the public folder
-  link(rel='stylesheet' href='/css/style.css')
-  link(rel='shorcut icon' type='image/png' href='img/favicon.png')
+      link(href='https://fonts.googleapis.com/css?family=Lato:300,300i,700' rel='stylesheet')
+      //- css/styles and img/ are in the public folder
+      link(rel='stylesheet' href='/css/style.css')
+      link(rel='shorcut icon' type='image/png' href='/img/favicon.png')
 
 body
   //- HEADER
