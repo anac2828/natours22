@@ -19,26 +19,28 @@ const bounds = new mapboxgl.LngLatBounds();
 
 
 locations.forEach(location => {
-  console.log(location.coordinates)
   // create marker
-  const marker = document.createElement('div')
-  marker.className = 'marker'
+  const marker = document.createElement('div');
+  marker.className = 'marker';
 
   // add marker to map
-  new mapboxgl.Marker(
-    {
-      element: marker,
-      anchor: 'bottom'
-    }).setLngLat(location.coordinates).addTo(map)
-  
+  new mapboxgl.Marker({
+    element: marker,
+    anchor: 'bottom',
+  })
+    .setLngLat(location.coordinates)
+    .addTo(map);
+
   // add popup
   new mapboxgl.Popup({
-    offset: 30
-  }).setLngLat(location.coordinates).setHTML(`<p> Day ${location.day}: ${location.description}</p>`).addTo(map)
+    offset: 30,
+  })
+    .setLngLat(location.coordinates)
+    .setHTML(`<p> Day ${location.day}: ${location.description}</p>`)
+    .addTo(map);
 
-  
   //Extend map bounds to include current location
-  bounds.extend(location.coordinates)
+  bounds.extend(location.coordinates);
 });
 
 // fits the map to location markers

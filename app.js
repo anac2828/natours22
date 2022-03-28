@@ -13,6 +13,7 @@ import reviewRouter from './routes/reviewRoutes.js';
 import viewRouter from './routes/viewRoutes.js';
 import AppError from './utils/appError.js';
 import globalErrorHandler from './controllers/errorController.js';
+import cookieParser from 'cookie-parser';
 
 const __dirname = path.resolve();
 
@@ -96,6 +97,8 @@ app.use('/api', limiter);
 // // // // // BODY PARSER
 // limit that amount of data that comes in the body for security purposes.
 app.use(express.json({ limit: '10kb' }));
+// gets access to the cookie in a request when a user logs in
+app.use(cookieParser());
 
 // Data sanitization againts NoSQL query injection - Will remove '$' from a query
 app.use(mongoSanitize());
@@ -122,6 +125,8 @@ app.use(
 app.use((req, res, next) => {
   // The time will be added to the request object and will be available on all requests
   req.requestTime = new Date().toLocaleString();
+  console.log(res.locals);
+  console.log(req.cookies);
   next();
 });
 

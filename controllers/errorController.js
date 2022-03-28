@@ -29,6 +29,7 @@ const handleJWTExpired = () =>
 // ********** SEND ERROR HANDLERS *************
 
 const sendErrDev = (err, res) => {
+  console.error(`ERROR *****`, err);
   res.status(err.statusCode).json({
     status: err.status,
     error: err,

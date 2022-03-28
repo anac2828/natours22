@@ -5,39 +5,12 @@ import User from '../models/userModel.js';
 import catchAsync from '../utils/catchAsync.js';
 import AppError from '../utils/appError.js';
 import sendEmail from '../utils/email.js';
+import {createNSendToken} from '../utils/createToken.js'
 
-// Will create a signature token to send to the user when they login or signup
-const signToken = (id) => {
-  // jwt.sign() will create a signature everytime a user logs in
-  // ** params - payload // secretKey // options // callback
-  return jwt.sign({ id }, process.env.JWT_SECRET, {
-    expiresIn: process.env.JWT_EXPIRES_IN,
-  });
-};
 
-const cookieOptions = {
-  expires: new Date(
-    Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
-  ),
-  // will only send the cookie over an https request
-
-  // will prevent the browser from modifying the cookie. It will prevent cross-site attacks
-  httpOnly: true,
-};
-
-if (process.env.NODE_DEV === 'production') cookiesOptions.secure = true;
-
-const createNSendToken = (user, statusCode, res) => {
-  const token = signToken(user._id);
-  // create and send a cookie to browser. Expires in 90 days (converted to milliseconds). The cookie is the token
-  res.cookie('jwt', token, cookieOptions);
-
-  // remove password from output
-  user.password = undefined;
-  res.status(statusCode).json({ status: 'success', token, data: { user } });
-};
-
+////////////////////////
 // ******** SIGN UP AND LOG IN ************
+////////////////////////
 
 export const signup = catchAsync(async (req, res, next) => {
   // SECURITY BUG - Don't use this code. A user could sign up as an admin
@@ -78,11 +51,54 @@ export const login = catchAsync(async (req, res, next) => {
   createNSendToken(user, 200, res);
 });
 
-// ******** PROTECT ************
+//Used to render user name and photo when they sign in not to protect route
 
+export const isLoggedIn = catchAsync(async (req, res, next) => {
+  // *********** GET TOKEN
+  // this token comes from a user login request
+  if (req.cookies.jwt) {
+    // *********** TOKEN VERIFICATION
+    // Will check if the token is valid. It will return the payload which has the user's id
+    // promisify will return a promise from jwt.verify function
+
+    const decodedToken = await promisify(jwt.verify)(
+      req.cookies.jwt,
+      process.env.JWT_SECRET
+    );
+
+    // *********** GET USER INFO
+    // Check if user still exits
+    const currentUser = await User.findById(decodedToken.id);
+
+    if (!currentUser) {
+      return next();
+    }
+
+    // Check if user changed password after the token was issued
+    // method from the userModel.js
+    if (currentUser.checkPassChangedAfterToken(decodedToken.iat)) {
+      return next();
+    }
+
+    // *********** RUN NEXT MIDDLEWARE
+    // store user for all view routes so pug templates have access to user info
+    res.locals.user = currentUser;
+    //use return so next will only be called once
+    return next();
+  }
+  return next();
+});
+
+////////////////////////
+// ******** PROTECT ************
+////////////////////////
+//
 export const protect = catchAsync(async (req, res, next) => {
-  // Getting token from headers
+  // *********** GETTING TOKEN
+
   let token;
+  // if there is a token present in the headers
+  // API side authorization
   if (
     req.headers.authorization &&
     req.headers.authorization.startsWith('Bearer')
@@ -90,12 +106,20 @@ export const protect = catchAsync(async (req, res, next) => {
     token = req.headers.authorization.split(' ')[1];
   }
 
+  // this token comes from a user login request
+  if (req.cookies.jwt) {
+    token = req.cookies.jwt;
+  }
+
+  // If no token present, the user needs to login to get a token
   if (!token)
     return next(
       new AppError('You are not logged in! Please log in to get access.', 401)
     );
 
-  // Verification token - will check if the token is valid. It will return the payload which has the user's id
+  // *********** TOKEN VERIFICATION
+
+  // Will check if the token is valid. It will return the payload which has the user's id
   // promisify will return a promise from jwt.verify function
 
   const decodedToken = await promisify(jwt.verify)(
@@ -103,6 +127,7 @@ export const protect = catchAsync(async (req, res, next) => {
     process.env.JWT_SECRET
   );
 
+  // *********** GET USER INFO
   // Check if user still exits
   const currentUser = await User.findById(decodedToken.id);
 
@@ -119,6 +144,8 @@ export const protect = catchAsync(async (req, res, next) => {
       new AppError('User recently changed password! Please log in again.', 401)
     );
   }
+
+  // *********** RUN NEXT MIDDLEWARE
   // next will grant access to protected route
   req.user = currentUser;
   next();
@@ -135,7 +162,10 @@ export const restrictTo = (...roles) => {
   };
 };
 
-// ********** PASSWORD RESET **********
+////////////////////////
+// ********** PASSWORD RESET ********** ////////////////////////
+////////////////////////
+
 export const forgotPassword = catchAsync(async (req, res, next) => {
   // Get user with email
   const user = await User.findOne({ email: req.body.email });
@@ -213,7 +243,9 @@ export const resetPassword = catchAsync(async (req, res, next) => {
   createNSendToken(user, 200, res);
 });
 
+////////////////////////
 // ********** UPDATE PASSWORD
+////////////////////////
 
 export const updatePassword = catchAsync(async (req, res, next) => {
   //Get user
