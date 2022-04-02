@@ -1,6 +1,7 @@
 import Tour from '../models/tourModel.js';
+import User from '../models/userModel.js';
 import catchAsync from '../utils/catchAsync.js';
-
+import AppError from '../utils/appError.js';
 
 // ALL TOURS PAGE
 
@@ -15,7 +16,6 @@ export const getOverview = catchAsync(async (req, res, next) => {
 // TOUR DETAILS PAGE
 
 export const getTour = catchAsync(async (req, res, next) => {
-  
   // Get tour data
   const tour = await Tour.findOne({
     slug: req.params.slug,
@@ -24,15 +24,42 @@ export const getTour = catchAsync(async (req, res, next) => {
     fields: 'review rating user',
   });
 
+  // App errors to display to browser. The message will be handled by the errorController.js
+  if (!tour) return next(new AppError('There is no tour with that name', 404));
   //Render template using data
 
   res.status(200).render('tour', { tour, title: tour.name });
 });
 
-
 // USER LOGIN
 
 export const getLoginForm = (req, res) => {
+  res.status(200).render('login', { title: 'Log in' });
+};
 
-  res.status(200).render('login', {title: 'Log in'})
- }
+// USER ACCOUNT
+
+export const getAccount = catchAsync(async (req, res, next) => {
+  // user data is already saved in the res.locals because of the protect route
+  res.status(200).render('account', { title: 'Your Account' });
+});
+
+//UPDATE USER DATE
+
+export const updateUserData = catchAsync(async (req, res, next) => {
+  console.log(res);
+  const updatedUser = await User.findByIdAndUpdate(
+    req.user.id,
+    {
+      name: req.body.name,
+      email: req.body.email,
+    },
+    {
+      new: true,
+      runValidators: true,
+    }
+  );
+  res
+    .status(200)
+    .render('account', { title: 'Your Account', user: updatedUser });
+});

@@ -23,7 +23,7 @@ const app = express();
 app.set('view engine', 'pug');
 app.set('views', `${__dirname}/views`);
 
-// // // // // // // // // // // SERVING STATIC FILES
+// // // // // // // // // // // ************** SERVING STATIC FILES
 // Gives access to the public folder in the url. The public folder is the root folder. It will only work for static files and will not go into subfolders.
 //http://localhost:3000/overview.html
 app.use(express.static(`${__dirname}/public`));
@@ -94,12 +94,16 @@ app.use('/api', limiter);
 //   },
 // }));
 
-// // // // // BODY PARSER
+// // // // // *************  BODY PARSER
 // limit that amount of data that comes in the body for security purposes.
+// gets access to the body in request
 app.use(express.json({ limit: '10kb' }));
+// get access to form data not using the API request. Use extends true for more complex data submition
+app.use(express.urlencoded({extends: true, limit: '10kb'}))
 // gets access to the cookie in a request when a user logs in
 app.use(cookieParser());
 
+// ******************* SECURITY
 // Data sanitization againts NoSQL query injection - Will remove '$' from a query
 app.use(mongoSanitize());
 
@@ -125,8 +129,7 @@ app.use(
 app.use((req, res, next) => {
   // The time will be added to the request object and will be available on all requests
   req.requestTime = new Date().toLocaleString();
-  console.log(res.locals);
-  console.log(req.cookies);
+  
   next();
 });
 

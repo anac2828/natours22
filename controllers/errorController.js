@@ -28,43 +28,72 @@ const handleJWTExpired = () =>
 
 // ********** SEND ERROR HANDLERS *************
 
-const sendErrDev = (err, res) => {
-  console.error(`ERROR *****`, err);
-  res.status(err.statusCode).json({
-    status: err.status,
-    error: err,
-    message: err.message,
-    stack: err.stack,
-  });
-};
-
-const sendErrProd = (err, res) => {
-  // The error object comes from the AppError class.
-  // This is a save error to display to the client
-  if (err.isOperational) {
+const sendErrDev = (err, req, res) => {
+  // API ERROR HANDLER
+  if (req.originalUrl.startsWith('/api'))
     return res.status(err.statusCode).json({
       status: err.status,
+      error: err,
       message: err.message,
+      stack: err.stack,
     });
+
+  // BROWSER ERROR HANDLER
+  console.error(`ERROR *****`, err);
+  // This is render the error page for the client using the error.pug file
+  return res
+    .status(err.statusCode)
+    .render('error', { title: 'Somthing went wrong!', msg: err.message });
+};
+
+const sendErrProd = (err, req, res) => {
+  // ******API ERROR HANDLER
+  if (req.originalUrl.startsWith('/api')) {
+    // A
+    // The error object comes from the AppError class.
+    // This is a save error to display to the client
+    if (err.isOperational) {
+      return res.status(err.statusCode).json({
+        status: err.status,
+        message: err.message,
+      });
+    }
+    // B
+    // 1) Log error for developer
+    console.error(`ERROR *****`, err);
+
+    // 2) Send generic message to client
+    // Programming or other unknown error: don't leak error details to client.
+    return res
+      .status(500)
+      .json({ status: 'error', message: 'Something went very wrong!' });
   }
-  // 1) Log error for developer
+
+  // ******** BROWSER ERROR HANDLER
+  // This is render the error page for the client using the error.pug file
+  if (err.isOperational) {
+    return res
+      .status(err.statusCode)
+      .render('error', { title: 'Somthing went wrong', msg: err.message });
+  }
+
+  // Programming or other unknown error: dont' leak error details
   console.error(`ERROR *****`, err);
 
-  // 2) Send generic message to client
-  // Programming or other unknown error: don't leak error details to client.
-  res
-    .status(500)
-    .json({ status: 'error', message: 'Something went very wrong!' });
+  return res.status(err.statusCode).render('error', {
+    title: 'Somthing went wrong',
+    msg: 'Please try again later',
+  });
 };
 
 // This is to catch global errors and send the message and status code. We get access to err, req, res, next from the app.use middleware where this function will be called
 export default (err, req, res, next) => {
-  // if the code is 500 the status is 'error' if it 400 status is fail
+  // if the code is 500 the status is 'error' if it is 400 status is fail
   err.status = err.status || 'error';
   err.statusCode = err.statusCode || 500;
 
   if (process.env.NODE_ENV === 'development') {
-    sendErrDev(err, res);
+    sendErrDev(err, req, res);
   }
 
   if (process.env.NODE_ENV === 'production') {
@@ -85,6 +114,6 @@ export default (err, req, res, next) => {
       error = handleValidatorErrordDB(error);
     if (error.name === 'JsonWebTokenError') error = handleJWTError();
     if (error.name === 'TokenExpiredError') error = handleJWTExpired();
-    sendErrProd(error, res);
+    sendErrProd(error, req, res);
   }
 };

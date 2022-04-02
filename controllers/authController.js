@@ -53,41 +53,53 @@ export const login = catchAsync(async (req, res, next) => {
 
 //Used to render user name and photo when they sign in not to protect route
 
-export const isLoggedIn = catchAsync(async (req, res, next) => {
+export const isLoggedIn = async (req, res, next) => {
   // *********** GET TOKEN
   // this token comes from a user login request
   if (req.cookies.jwt) {
-    // *********** TOKEN VERIFICATION
-    // Will check if the token is valid. It will return the payload which has the user's id
-    // promisify will return a promise from jwt.verify function
+    try {
+      // *********** TOKEN VERIFICATION
+      // Will check if the token is valid. It will return the payload which has the user's id
+      // promisify will return a promise from jwt.verify function
 
-    const decodedToken = await promisify(jwt.verify)(
-      req.cookies.jwt,
-      process.env.JWT_SECRET
-    );
+      const decodedToken = await promisify(jwt.verify)(
+        req.cookies.jwt,
+        process.env.JWT_SECRET
+      );
 
-    // *********** GET USER INFO
-    // Check if user still exits
-    const currentUser = await User.findById(decodedToken.id);
+      // *********** GET USER INFO
+      // Check if user still exits
+      const currentUser = await User.findById(decodedToken.id);
 
-    if (!currentUser) {
+      if (!currentUser) {
+        return next();
+      }
+
+      // Check if user changed password after the token was issued
+      // method from the userModel.js
+      if (currentUser.checkPassChangedAfterToken(decodedToken.iat)) {
+        return next();
+      }
+
+      // *********** RUN NEXT MIDDLEWARE
+      // store user for all view routes so pug templates have access to user info
+      res.locals.user = currentUser;
+      //use return so next will only be called once
+      return next();
+    } catch (error) {
       return next();
     }
-
-    // Check if user changed password after the token was issued
-    // method from the userModel.js
-    if (currentUser.checkPassChangedAfterToken(decodedToken.iat)) {
-      return next();
-    }
-
-    // *********** RUN NEXT MIDDLEWARE
-    // store user for all view routes so pug templates have access to user info
-    res.locals.user = currentUser;
-    //use return so next will only be called once
-    return next();
   }
   return next();
-});
+};
+
+export const logout = (req, res, next) => {
+  res.cookie('jwt', 'Logged out', {
+    expires: new Date(Date.now() + 10 * 1000),
+    httpOnly: true,
+  });
+  res.status(200).json({ status: 'success' });
+};
 
 ////////////////////////
 // ******** PROTECT ************
@@ -147,7 +159,10 @@ export const protect = catchAsync(async (req, res, next) => {
 
   // *********** RUN NEXT MIDDLEWARE
   // next will grant access to protected route
+  // req.user for use with API
   req.user = currentUser;
+  // res.locals for use with pug templates
+  res.locals.user = currentUser;
   next();
 });
 
