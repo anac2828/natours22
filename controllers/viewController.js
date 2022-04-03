@@ -44,10 +44,9 @@ export const getAccount = catchAsync(async (req, res, next) => {
   res.status(200).render('account', { title: 'Your Account' });
 });
 
-//UPDATE USER DATE
+//UPDATE USER DATA - IF NOT USING API
 
-export const updateUserData = catchAsync(async (req, res, next) => {
-  console.log(res);
+export const updateUserData = catchAsync(async (req, res) => {
   const updatedUser = await User.findByIdAndUpdate(
     req.user.id,
     {

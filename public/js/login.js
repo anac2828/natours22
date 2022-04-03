@@ -24,13 +24,13 @@ export const login = async (email, password) => {
     // }
 
     // AXIOS AJAX
-    const data = await axios({
+    const res = await axios({
       method: 'POST',
       url: 'http://localhost:3000/api/v1/users/login',
       data: { email, password },
     });
 
-    if (data.data.status === 'success') {
+    if (res.data.status === 'success') {
       showAlert('success', 'You are now logged in.');
       window.setTimeout(() => location.assign('/'), 1500);
     }
@@ -50,7 +50,8 @@ export const logout = async () => {
     });
     const data = await res.json();
 
-    // reload true to force a reload and clear browser cache
+    // reload true to force a reload and clear browser cache (check code for this)
+    // if (data.status === 'success') location.reload(true);
     if (data.status === 'success') location.assign('/login');
   } catch (error) {
     showAlert('error', 'Error loggin out! Try again.');

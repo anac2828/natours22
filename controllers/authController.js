@@ -5,8 +5,7 @@ import User from '../models/userModel.js';
 import catchAsync from '../utils/catchAsync.js';
 import AppError from '../utils/appError.js';
 import sendEmail from '../utils/email.js';
-import {createNSendToken} from '../utils/createToken.js'
-
+import { createNSendToken } from '../utils/createToken.js';
 
 ////////////////////////
 // ******** SIGN UP AND LOG IN ************
@@ -227,7 +226,7 @@ export const forgotPassword = catchAsync(async (req, res, next) => {
 });
 
 export const resetPassword = catchAsync(async (req, res, next) => {
-  // Find user with token sent to them. The token sent to use was not encrypted and rest token in the data is encrypted. Encryp user token to be able to find the user.
+  // Find user with token sent to them. The token sent to use was not encrypted and reset token in the data is encrypted. Encryp user token to be able to find the user.
   const hashedToken = crypto
     .createHash('sha256')
     .update(req.params.token)

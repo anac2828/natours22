@@ -99,7 +99,7 @@ app.use('/api', limiter);
 // gets access to the body in request
 app.use(express.json({ limit: '10kb' }));
 // get access to form data not using the API request. Use extends true for more complex data submition
-app.use(express.urlencoded({extends: true, limit: '10kb'}))
+app.use(express.urlencoded({ extends: true, limit: '10kb' }));
 // gets access to the cookie in a request when a user logs in
 app.use(cookieParser());
 
@@ -129,7 +129,7 @@ app.use(
 app.use((req, res, next) => {
   // The time will be added to the request object and will be available on all requests
   req.requestTime = new Date().toLocaleString();
-  
+  console.log(req.cookies);
   next();
 });
 

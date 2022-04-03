@@ -22,6 +22,7 @@ export const getMe = (req, res, next) => {
 
 // ********** UPDATE LOGGED IN USER INFO BY USER **********
 export const updateMe = catchAsync(async (req, res, next) => {
+  console.log(req.body);
   //Create error if user try to update passwords in this route
   // req.body.hasOwnProperty('password', 'passwordConfirm');
   if (req.body.password || req.body.passwordConfirm)
@@ -57,7 +58,7 @@ export const getUser = factory.getOne(User);
 export const createUser = (req, res) => {
   res.status(500).json({
     status: 'error',
-    message: 'This route is not yer defined! Please use /signup instead.',
+    message: 'This route is not yet defined! Please use /signup instead.',
   });
 };
 
