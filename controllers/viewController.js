@@ -45,20 +45,19 @@ export const getAccount = catchAsync(async (req, res, next) => {
 });
 
 //UPDATE USER DATA - IF NOT USING API
-
-export const updateUserData = catchAsync(async (req, res) => {
-  const updatedUser = await User.findByIdAndUpdate(
-    req.user.id,
-    {
-      name: req.body.name,
-      email: req.body.email,
-    },
-    {
-      new: true,
-      runValidators: true,
-    }
-  );
-  res
-    .status(200)
-    .render('account', { title: 'Your Account', user: updatedUser });
-});
+// export const updateUserData = catchAsync(async (req, res) => {
+//   const updatedUser = await User.findByIdAndUpdate(
+//     req.user.id,
+//     {
+//       name: req.body.name,
+//       email: req.body.email,
+//     },
+//     {
+//       new: true,
+//       runValidators: true,
+//     }
+//   );
+//   res
+//     .status(200)
+//     .render('account', { title: 'Your Account', user: updatedUser });
+// });

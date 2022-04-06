@@ -1,7 +1,7 @@
 import 'babel-polyfill';
 import { login, logout } from './login.js';
 import { displayMap } from './mapbox.js';
-import { updatePassword, updateData } from './updateSettings.js';
+import { updateSettings } from './updateSettings.js';
 
 // ******* DOM ELEMENTS
 const mapBoxContainer = document.getElementById('map');
@@ -38,24 +38,33 @@ if (logoutBtn) logoutBtn.addEventListener('click', logout);
 
 if (userDataForm) {
   userDataForm.addEventListener('submit', (event) => {
-    console.log('user data form');
-    const name = document.querySelector('#name').value;
-    const email = document.querySelector('#email').value;
     event.preventDefault();
 
-    updateData(name, email);
+    const name = document.querySelector('#name').value;
+    const email = document.querySelector('#email').value;
+
+    updateSettings({ name, email }, 'data');
   });
 }
 
 // UPDATE PASSWORD
 
 if (updatePasswordForm)
-  updatePasswordForm.addEventListener('submit', (event) => {
+  updatePasswordForm.addEventListener('submit', async (event) => {
     event.preventDefault();
 
-    const currentPassword = document.querySelector('#password-current').value;
-    const newPassword = document.querySelector('#password').value;
-    const confirmPassword = document.querySelector('#password-confirm').value;
+    const currentPassword = document.querySelector('#password-current');
+    const newPassword = document.querySelector('#password');
+    const confirmPassword = document.querySelector('#password-confirm');
 
-    updatePassword(currentPassword, newPassword, confirmPassword);
+    await updateSettings(
+      {
+        currentPassword: currentPassword.value,
+        newPassword: newPassword.value,
+        confirmPassword: confirmPassword.value,
+      },
+      'password'
+    );
+
+    currentPassword.value = newPassword.value = confirmPassword.value = '';
   });

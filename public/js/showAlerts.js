@@ -8,6 +8,6 @@ export const showAlert = (type, msg) => {
   const markup = `<div class="alert alert--${type}">${msg}</div>`;
 
   // afterbegin will insert the markup at the top of the body tag
-  document.querySelector('main').insertAdjacentHTML('afterbegin', markup);
+  document.querySelector('body').insertAdjacentHTML('afterbegin', markup);
   window.setTimeout(hideAlert, 5000);
-};
+};;

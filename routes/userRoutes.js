@@ -1,4 +1,5 @@
 import express from 'express';
+
 import * as userController from '../controllers/userController.js';
 import * as authController from '../controllers/authController.js';
 const router = express.Router();
@@ -23,7 +24,11 @@ router.patch('/updatepassword', authController.updatePassword);
 // LOGGED IN USER ROUTES
 router.get('/me', userController.getMe, userController.getUser);
 
-router.patch('/updatemydata', userController.updateMe);
+router.patch(
+  '/updatemydata',
+  userController.uploadUserPhoto,
+  userController.updateMe
+);
 router.delete('/deletemyaccount', userController.deleteAccount);
 
 // ROUTES FOR ADMIN

@@ -6,6 +6,7 @@ import catchAsync from '../utils/catchAsync.js';
 import AppError from '../utils/appError.js';
 import sendEmail from '../utils/email.js';
 import { createNSendToken } from '../utils/createToken.js';
+import { contentSecurityPolicy } from 'helmet';
 
 ////////////////////////
 // ******** SIGN UP AND LOG IN ************
@@ -267,11 +268,11 @@ export const updatePassword = catchAsync(async (req, res, next) => {
   if (!user) return next(new AppError('There is no user with that email', 404));
 
   // Check if current password is corrent
-  if (!(await user.checkPassword(req.body.passwordCurrent, user.password)))
+  if (!(await user.checkPassword(req.body.currentPassword, user.password)))
     return next(new AppError('The password you entered is incorrect', 404));
 
   // Update password
-  user.password = req.body.password;
+  user.password = req.body.newPassword;
   user.passwordConfirm = req.body.passwordConfirm;
   await user.save();
 

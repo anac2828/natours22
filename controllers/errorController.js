@@ -91,7 +91,7 @@ export default (err, req, res, next) => {
   // if the code is 500 the status is 'error' if it is 400 status is fail
   err.status = err.status || 'error';
   err.statusCode = err.statusCode || 500;
-
+console.log(err);
   if (process.env.NODE_ENV === 'development') {
     sendErrDev(err, req, res);
   }
