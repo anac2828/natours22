@@ -1,8 +1,58 @@
+import { upload } from '../utils/multer.js';
+// Resize image library
+import sharp from 'sharp';
 import Tour from '../models/tourModel.js';
 import AppError from '../utils/appError.js';
 
 import catchAsync from '../utils/catchAsync.js';
 import * as factory from './handlerFactory.js';
+
+// MULTER MIDDLEWARE
+//images will be saved to multer memory storage as a buffer
+export const uploadTourImages = upload.fields([
+  // name = dataField in the tour model, maxCount = number of images that can be uploaded
+  { name: 'imageCover', maxCount: 1 },
+  { name: 'images', maxCount: 3 },
+]);
+
+// use upload.array when you have one field
+// upload.array('images', 5)
+
+export const resizeTourImages = catchAsync(async (req, res, next) => {
+  console.log(req.files);
+  // from multer
+  if (!req.files.imageCover || !req.files.images) return next();
+
+  // 1) cover image
+  req.body.imageCover = `tour-${req.params.id}-${Date.now()}-cover.jpeg`;
+  // req.file.buffer comes from the multer.memoryStorage()
+  // resize image
+  await sharp(req.files.imageCover[0].buffer)
+    .resize(2300, 1333)
+    .toFormat('jpeg')
+    .jpeg({ quality: 90 })
+    .toFile(`public/img/tours/${req.body.imageCover}`);
+
+  // 2) Images
+  req.body.images = [];
+
+  // use map so async will wait until all the images are processed.
+  await Promise.all(
+    req.files.images.map(async (file, i) => {
+      const filename = `tour-${req.params.id}-${Date.now()}-${i + 1}.jpeg`;
+      // will save the images to the public folder
+      await sharp(file.buffer)
+        .resize(2000, 1333)
+        .toFormat('jpeg')
+        .jpeg({ quality: 90 })
+        .toFile(`public/img/tours/${filename}`);
+      // push the file name to the body so that the next middleware will update the database with the correct image name
+      req.body.images.push(filename);
+    })
+  );
+  console.log(req.body.images);
+  next();
+});
 
 // MIDDLEWARE Handler for use in the tourRoute.js
 export const aliasTopTours = (req, res, next) => {
@@ -29,12 +79,16 @@ export const getToursWithin = catchAsync(async (req, res, next) => {
     );
   // startLocation is where the tour is located. $geoWithin will earch for tours within a certain radius. $centerSphere takes an array of lng, lat where to start the search and the radius is the distance in miles or km
   const tours = await Tour.find({
-    startLocation: { $geoWithin: { $centerSphere: [[lng, lat], radiance] } },
+    startLocation: {
+      $geoWithin: { $centerSphere: [[lng, lat], radiance] },
+    },
   });
 
-  res
-    .status(200)
-    .json({ status: 'success', results: tours.length, data: { Tour: tours } });
+  res.status(200).json({
+    status: 'success',
+    results: tours.length,
+    data: { Tour: tours },
+  });
 });
 
 // '/distances/:latlng/unit/:unit'
@@ -161,7 +215,9 @@ export const getMonthlyPlan = catchAsync(async (req, res) => {
     },
   ]);
 
-  res
-    .status(200)
-    .json({ status: 'success', results: plan.length, data: { plan } });
+  res.status(200).json({
+    status: 'success',
+    results: plan.length,
+    data: { plan },
+  });
 });

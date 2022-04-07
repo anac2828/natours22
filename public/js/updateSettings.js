@@ -25,8 +25,10 @@ export const updateSettings = async (data, type) => {
       data,
     });
 
-    if ((res.data.status = 'success'))
+    if ((res.data.status = 'success')) {
       showAlert('success', `Your ${type} has been updated`);
+      location.reload();
+    }
   } catch (error) {
     showAlert('error', error.response.data.message);
   }

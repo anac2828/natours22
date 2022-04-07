@@ -40,10 +40,20 @@ if (userDataForm) {
   userDataForm.addEventListener('submit', (event) => {
     event.preventDefault();
 
-    const name = document.querySelector('#name').value;
-    const email = document.querySelector('#email').value;
+    // this will create an enctype="multipart/form-data"  form data
 
-    updateSettings({ name, email }, 'data');
+    //form will be an object
+    const form = new FormData();
+    // key, value
+    form.append('name', document.querySelector('#name').value);
+    form.append('email', document.querySelector('#email').value);
+    // files are an array
+    form.append('photo', document.querySelector('#photo').files[0]);
+
+    // const name = document.querySelector('#name').value;
+    // const email = document.querySelector('#email').value;
+    console.log(form);
+    updateSettings(form, 'data');
   });
 }
 
