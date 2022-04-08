@@ -9,6 +9,8 @@ const router = express.Router();
 router.get('/', authController.isLoggedIn, viewController.getOverview);
 router.get('/tour/:slug', authController.isLoggedIn, viewController.getTour);
 
+router.get('/signup', viewController.getSignUpForm);
+
 router.get('/login', authController.isLoggedIn, viewController.getLoginForm);
 router.get('/me', authController.protect, viewController.getAccount);
 // END POINT TO SUBMIT USER DATA UPDATE FORM WHEN NOT USING API

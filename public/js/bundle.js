@@ -8058,7 +8058,7 @@ module.exports = require('./lib/axios');
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.logout = exports.login = undefined;
+exports.signup = exports.logout = exports.login = undefined;
 var _this = undefined;
 
 var _showAlerts = require('./showAlerts');
@@ -8167,6 +8167,53 @@ var logout = exports.logout = function () {
 
   return function logout() {
     return _ref2.apply(this, arguments);
+  };
+}();
+
+var signup = exports.signup = function () {
+  var _ref3 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee3(name, email, password, passwordConfirm) {
+    var res;
+    return regeneratorRuntime.wrap(function _callee3$(_context3) {
+      while (1) {
+        switch (_context3.prev = _context3.next) {
+          case 0:
+            _context3.prev = 0;
+            _context3.next = 3;
+            return (0, _axios2.default)({
+              method: 'POST',
+              url: 'http://localhost:3000/api/v1/users/signup',
+              data: { name: name, email: email, password: password, passwordConfirm: passwordConfirm }
+            });
+
+          case 3:
+            res = _context3.sent;
+
+
+            if (res.data.status === 'success') {
+              (0, _showAlerts.showAlert)('success', 'Account created successfully');
+              window.setTimeout(function () {
+                return location.assign('/');
+              }, 1500);
+            }
+            _context3.next = 10;
+            break;
+
+          case 7:
+            _context3.prev = 7;
+            _context3.t0 = _context3['catch'](0);
+
+            (0, _showAlerts.showAlert)('error', _context3.t0.data.message);
+
+          case 10:
+          case 'end':
+            return _context3.stop();
+        }
+      }
+    }, _callee3, _this, [[0, 7]]);
+  }));
+
+  return function signup(_x3, _x4, _x5, _x6) {
+    return _ref3.apply(this, arguments);
   };
 }();
 },{"./showAlerts":"showAlerts.js","axios":"../../node_modules/axios/index.js"}],"../../node_modules/mapbox-gl/dist/mapbox-gl.js":[function(require,module,exports) {
@@ -21398,6 +21445,7 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
 // ******* DOM ELEMENTS
 var mapBoxContainer = document.getElementById('map');
 var loginForm = document.querySelector('#login-form');
+var signupForm = document.querySelector('#signup-form');
 var logoutBtn = document.querySelector('.nav__el--logout');
 var updatePasswordForm = document.querySelector('.form-user-settings');
 var userDataForm = document.querySelector('.form-user-data');
@@ -21412,6 +21460,18 @@ if (mapBoxContainer) {
   var locations = JSON.parse(mapBoxContainer.dataset.locations);
   (0, _mapbox.displayMap)(locations);
 }
+
+// SING UP FORM
+
+if (signupForm) signupForm.addEventListener('submit', function (event) {
+  var name = document.querySelector('#name').value;
+  var email = document.querySelector('#email').value;
+  var password = document.querySelector('#password').value;
+  var passwordConfirm = document.querySelector('#passwordConfirm').value;
+  event.preventDefault();
+  (0, _login.signup)(name, email, password, passwordConfirm);
+});
+
 // LOGIN FORM
 
 if (loginForm) loginForm.addEventListener('submit', function (event) {
@@ -21514,7 +21574,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = '' || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + '60086' + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + '49537' + '/');
   ws.onmessage = function (event) {
     var data = JSON.parse(event.data);
 
@@ -21656,4 +21716,4 @@ function hmrAccept(bundle, id) {
   });
 }
 },{}]},{},["../../node_modules/parcel-bundler/src/builtins/hmr-runtime.js","index.js"], null)
-//# sourceMappingURL=/bundle.map
+//# sourceMappingURL=/js/bundle.map

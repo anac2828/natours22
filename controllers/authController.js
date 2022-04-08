@@ -4,15 +4,18 @@ import jwt from 'jsonwebtoken';
 import User from '../models/userModel.js';
 import catchAsync from '../utils/catchAsync.js';
 import AppError from '../utils/appError.js';
-import sendEmail from '../utils/email.js';
+import { Email } from '../utils/Email.js';
+// import sendEmail from '../utils/email.js';
 import { createNSendToken } from '../utils/createToken.js';
-import { contentSecurityPolicy } from 'helmet';
 
 ////////////////////////
 // ******** SIGN UP AND LOG IN ************
 ////////////////////////
 
 export const signup = catchAsync(async (req, res, next) => {
+  // url for email template
+  const url = `${req.protocol}://${req.get('host')}/me`;
+
   // SECURITY BUG - Don't use this code. A user could sign up as an admin
   // const newUser = await User.create(req.body);
   const newUser = await User.create({
@@ -23,6 +26,8 @@ export const signup = catchAsync(async (req, res, next) => {
     passwordChangedAt: req.body.passwordChangedAt,
     role: req.body.role || 'user',
   });
+
+  await new Email(newUser, url).sendWelcome();
 
   // const token = signToken(newUser._id);
   // // When a user is created they will be signed in.
@@ -189,27 +194,29 @@ export const forgotPassword = catchAsync(async (req, res, next) => {
     return next(new AppError('There is no user with that email address.', 404));
 
   //Generate random reset token
-
   const resetToken = user.createPasswordResetToken();
 
   // We need to save the user so that the encrypted token and expired time are save to the database after the createPasswordResetToken is called
   await user.save();
 
   // Link that will be sent to user via email
-  const resetURL = `${req.protocol}://${req.get(
-    'host'
-  )}/api/v1/users/resetPassword/${resetToken}`;
 
   //user will get an email with a link to reset the password
-  const message = `Forgot your password? Click here ${resetURL} to request a new password. \n If you din't forget your password, please ignore this email!`;
 
   try {
+    // const message = `Forgot your password? Click here ${resetURL} to request a new password. \n If you din't forget your password, please ignore this email!`;
     // function email.js
-    await sendEmail({
-      email: user.email,
-      subject: 'Your password rest request (valid for 10 min)',
-      message,
-    });
+    // await sendEmail({
+    //   email: user.email,
+    //   subject: 'Your password rest request (valid for 10 min)',
+    //   message,
+    // });
+
+    const resetURL = `${req.protocol}://${req.get(
+      'host'
+    )}/api/v1/users/resetPassword/${resetToken}`;
+
+    await new Email(user, resetURL).sendPasswordReset();
 
     res
       .status(200)
