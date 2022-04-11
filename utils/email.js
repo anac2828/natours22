@@ -2,7 +2,6 @@ import path from 'path';
 import pug from 'pug';
 import { htmlToText } from 'html-to-text';
 import nodemailer from 'nodemailer';
-import sgTransport from 'nodemailer-sendgrid-transport';
 
 const __dirname = path.resolve();
 
@@ -50,7 +49,7 @@ export class Email {
     //Render HMTL based on a pug template
     // dirname - location of the currently running script (natours22 folder)
     //renderFile(template, data for personalization)
-    console.log(`${__dirname}`);
+
     const html = pug.renderFile(`${__dirname}/views/emails/${template}.pug`, {
       firstName: this.firstName,
       url: this.url,
@@ -67,7 +66,7 @@ export class Email {
       // convert html to text
       text: htmlToText(html),
     };
-    console.log(mailOptions.to);
+
     // Create a transprot and send email. The newTransport will be created either with nodemailer or SendGrid
     await this.newTransport().sendMail(mailOptions);
   }

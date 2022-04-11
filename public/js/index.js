@@ -1,5 +1,6 @@
 import 'babel-polyfill';
 import { login, logout, signup } from './login.js';
+import { forgotPassword, resetPassword } from './resetPassword.js';
 import { displayMap } from './mapbox.js';
 import { updateSettings } from './updateSettings.js';
 
@@ -8,9 +9,12 @@ const mapBoxContainer = document.getElementById('map');
 const loginForm = document.querySelector('#login-form');
 const signupForm = document.querySelector('#signup-form');
 const logoutBtn = document.querySelector('.nav__el--logout');
+const forgotPasswordForm = document.querySelector('#forgot-password');
+const resetPasswordForm = document.querySelector('#reset-password');
 const updatePasswordForm = document.querySelector('.form-user-settings');
 const userDataForm = document.querySelector('.form-user-data');
-
+let resetToken;
+console.log(resetToken);
 // ******* VALUES
 
 // ********** DELEGATION
@@ -21,6 +25,28 @@ if (mapBoxContainer) {
   const locations = JSON.parse(mapBoxContainer.dataset.locations);
   displayMap(locations);
 }
+
+// FORGOT PASSWORD FORM
+if (forgotPasswordForm)
+  forgotPasswordForm.addEventListener('submit', async (event) => {
+    event.preventDefault();
+
+    const email = document.querySelector('#email').value;
+
+    resetToken = await forgotPassword(email);
+    console.log(resetToken);
+  });
+
+// RESET PASSWORD FORM
+if (resetPasswordForm)
+  resetPasswordForm.addEventListener('submit', (event) => {
+    event.preventDefault();
+
+    const password = document.querySelector('#password').value;
+    const passwordConfirm = document.querySelector('#passwordConfirm').value;
+
+    resetPassword(password, passwordConfirm, resetToken);
+  });
 
 // SING UP FORM
 
@@ -48,6 +74,7 @@ if (loginForm)
 
 if (logoutBtn) logoutBtn.addEventListener('click', logout);
 
+// ********************************
 // UPDATE USER DATA
 
 if (userDataForm) {
@@ -66,7 +93,7 @@ if (userDataForm) {
 
     // const name = document.querySelector('#name').value;
     // const email = document.querySelector('#email').value;
-    console.log(form);
+
     updateSettings(form, 'data');
   });
 }

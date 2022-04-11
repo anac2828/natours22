@@ -212,15 +212,20 @@ export const forgotPassword = catchAsync(async (req, res, next) => {
     //   message,
     // });
 
-    const resetURL = `${req.protocol}://${req.get(
-      'host'
-    )}/api/v1/users/resetPassword/${resetToken}`;
+    // email link for user to reset password
+    const resetURL = `${req.protocol}://${req.get('host')}/resetpassword`;
+
+    // const resetURL = `${req.protocol}://${req.get(
+    //   'host'
+    // )}/api/v1/users/resetPassword/${resetToken}`;
 
     await new Email(user, resetURL).sendPasswordReset();
-
-    res
-      .status(200)
-      .json({ status: 'success', message: 'Reset link sent to email!' });
+    console.log(resetToken);
+    res.status(200).json({
+      status: 'success',
+      message: 'Reset link sent to email!',
+      resetToken,
+    });
   } catch (error) {
     // if there is an error with sending the email the error will be thrown here
     user.passwordResetToken = undefined;
@@ -234,10 +239,11 @@ export const forgotPassword = catchAsync(async (req, res, next) => {
 });
 
 export const resetPassword = catchAsync(async (req, res, next) => {
+  console.log('PARAMS ************', req.params, req.body);
   // Find user with token sent to them. The token sent to use was not encrypted and reset token in the data is encrypted. Encryp user token to be able to find the user.
   const hashedToken = crypto
     .createHash('sha256')
-    .update(req.params.token)
+    .update(req.params.resetToken)
     .digest('hex');
 
   //find user with token that has not expired

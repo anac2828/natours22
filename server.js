@@ -2,7 +2,7 @@
 import 'dotenv/config.js';
 import mongoose from 'mongoose';
 import app from './app.js';
-
+console.log(process.env.NODE_ENV);
 // "env" = express enviroment - The default env is developer
 // console.log(app.get('env'));
 // node envirement variables set up by the process module

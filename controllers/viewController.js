@@ -43,6 +43,18 @@ export const getLoginForm = (req, res) => {
   res.status(200).render('login', { title: 'Log in' });
 };
 
+// FORGOT PASSWORD 
+
+export const getForgotPassForm = (req, res) => {
+  res.status(200).render('forgotPass', {title: 'Forgot password'})
+}
+
+// RESET PASSWORD
+export const getResetPassForm = (req, res) => {
+  
+  res.status(200).render('resetPassword', { title: 'Reset password' });
+};
+
 // USER ACCOUNT
 
 export const getAccount = catchAsync(async (req, res, next) => {
