@@ -217,7 +217,6 @@ tourSchema.pre('aggregate', function (next) {
   // will add a match state at beggining of aggregate pipeline
   this.pipeline().push({ $match: { secretTour: false } });
 
-  console.log(this.pipeline());
   next();
 });
 // Model

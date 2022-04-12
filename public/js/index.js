@@ -13,8 +13,7 @@ const forgotPasswordForm = document.querySelector('#forgot-password');
 const resetPasswordForm = document.querySelector('#reset-password');
 const updatePasswordForm = document.querySelector('.form-user-settings');
 const userDataForm = document.querySelector('.form-user-data');
-let resetToken;
-console.log(resetToken);
+
 // ******* VALUES
 
 // ********** DELEGATION
@@ -33,8 +32,8 @@ if (forgotPasswordForm)
 
     const email = document.querySelector('#email').value;
 
-    resetToken = await forgotPassword(email);
-    console.log(resetToken);
+    forgotPassword(email);
+    
   });
 
 // RESET PASSWORD FORM
@@ -44,7 +43,7 @@ if (resetPasswordForm)
 
     const password = document.querySelector('#password').value;
     const passwordConfirm = document.querySelector('#passwordConfirm').value;
-
+    const resetToken = resetPasswordForm.dataset.resettoken;
     resetPassword(password, passwordConfirm, resetToken);
   });
 

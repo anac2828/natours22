@@ -19,7 +19,6 @@ export const uploadTourImages = upload.fields([
 // upload.array('images', 5)
 
 export const resizeTourImages = catchAsync(async (req, res, next) => {
-  console.log(req.files);
   // from multer
   if (!req.files.imageCover || !req.files.images) return next();
 
@@ -50,7 +49,7 @@ export const resizeTourImages = catchAsync(async (req, res, next) => {
       req.body.images.push(filename);
     })
   );
-  console.log(req.body.images);
+
   next();
 });
 

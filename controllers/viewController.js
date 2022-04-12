@@ -43,16 +43,31 @@ export const getLoginForm = (req, res) => {
   res.status(200).render('login', { title: 'Log in' });
 };
 
+// ******************************
+// ******************************
 // FORGOT PASSWORD 
 
 export const getForgotPassForm = (req, res) => {
-  res.status(200).render('forgotPass', {title: 'Forgot password'})
+
+  console.log(req);
+  res
+    .status(200)
+    .render('forgotEmail/forgotPass', { title: 'Forgot password' });
 }
 
 // RESET PASSWORD
 export const getResetPassForm = (req, res) => {
-  
-  res.status(200).render('resetPassword', { title: 'Reset password' });
+  res.status(200).render('forgotEmail/resetPassword', {
+    title: 'Reset password',
+    resetToken: req.params.resetToken,
+  });
+};
+
+// RESEND EMAIL LINK
+export const getResendEmailForm = (req, res) => {
+  res.status(200).render('forgotEmail/checkEmail', {
+    title: 'Check your e-mail',
+  });
 };
 
 // USER ACCOUNT

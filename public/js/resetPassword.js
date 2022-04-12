@@ -11,12 +11,9 @@ export const forgotPassword = async (email) => {
 
     if (res.data.status === 'success') {
       showAlert('success', res.data.message);
-      window.setTimeout(() => location.reload(), 1500);
+      window.setTimeout(() => location.assign('/checkemail'), 1500);
     }
-
-    return res.data.resetToken;
   } catch (error) {
-    console.log(error);
     showAlert('error', error.response.data.message);
   }
 };
@@ -30,11 +27,10 @@ export const resetPassword = async (password, passwordConfirm, resetToken) => {
     });
 
     if (res.data.status === 'success') {
-      showAlert('success', res.data.message);
-      // window.setTimeout(() => location.assign('/'), 1500);
+      showAlert('success', 'You are now logged in!');
+      window.setTimeout(() => location.assign('/'), 1500);
     }
   } catch (error) {
-    console.log(error);
     showAlert('error', error.response.data.message);
   }
 };

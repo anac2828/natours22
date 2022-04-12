@@ -8257,25 +8257,24 @@ var forgotPassword = exports.forgotPassword = function () {
             if (res.data.status === 'success') {
               (0, _showAlerts.showAlert)('success', res.data.message);
               window.setTimeout(function () {
-                return location.reload();
+                return location.assign('/checkemail');
               }, 1500);
             }
+            _context.next = 10;
+            break;
 
-            return _context.abrupt('return', res.data.resetToken);
-
-          case 8:
-            _context.prev = 8;
+          case 7:
+            _context.prev = 7;
             _context.t0 = _context['catch'](0);
 
-            console.log(_context.t0);
             (0, _showAlerts.showAlert)('error', _context.t0.response.data.message);
 
-          case 12:
+          case 10:
           case 'end':
             return _context.stop();
         }
       }
-    }, _callee, _this, [[0, 8]]);
+    }, _callee, _this, [[0, 7]]);
   }));
 
   return function forgotPassword(_x) {
@@ -8303,20 +8302,21 @@ var resetPassword = exports.resetPassword = function () {
 
 
             if (res.data.status === 'success') {
-              (0, _showAlerts.showAlert)('success', res.data.message);
-              // window.setTimeout(() => location.assign('/'), 1500);
+              (0, _showAlerts.showAlert)('success', 'You are now logged in!');
+              window.setTimeout(function () {
+                return location.assign('/');
+              }, 1500);
             }
-            _context2.next = 11;
+            _context2.next = 10;
             break;
 
           case 7:
             _context2.prev = 7;
             _context2.t0 = _context2['catch'](0);
 
-            console.log(_context2.t0);
             (0, _showAlerts.showAlert)('error', _context2.t0.response.data.message);
 
-          case 11:
+          case 10:
           case 'end':
             return _context2.stop();
         }
@@ -21565,8 +21565,7 @@ var forgotPasswordForm = document.querySelector('#forgot-password');
 var resetPasswordForm = document.querySelector('#reset-password');
 var updatePasswordForm = document.querySelector('.form-user-settings');
 var userDataForm = document.querySelector('.form-user-data');
-var resetToken = void 0;
-console.log(resetToken);
+
 // ******* VALUES
 
 // ********** DELEGATION
@@ -21589,15 +21588,11 @@ if (forgotPasswordForm) forgotPasswordForm.addEventListener('submit', function (
             event.preventDefault();
 
             email = document.querySelector('#email').value;
-            _context.next = 4;
-            return (0, _resetPassword.forgotPassword)(email);
 
-          case 4:
-            resetToken = _context.sent;
 
-            console.log(resetToken);
+            (0, _resetPassword.forgotPassword)(email);
 
-          case 6:
+          case 3:
           case 'end':
             return _context.stop();
         }
@@ -21616,7 +21611,7 @@ if (resetPasswordForm) resetPasswordForm.addEventListener('submit', function (ev
 
   var password = document.querySelector('#password').value;
   var passwordConfirm = document.querySelector('#passwordConfirm').value;
-
+  var resetToken = resetPasswordForm.dataset.resettoken;
   (0, _resetPassword.resetPassword)(password, passwordConfirm, resetToken);
 });
 
@@ -21734,7 +21729,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = '' || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + '49537' + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + '56350' + '/');
   ws.onmessage = function (event) {
     var data = JSON.parse(event.data);
 

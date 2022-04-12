@@ -129,7 +129,7 @@ app.use(
 app.use((req, res, next) => {
   // The time will be added to the request object and will be available on all requests
   req.requestTime = new Date().toLocaleString();
-
+console.log(res.locals);
   next();
 });
 

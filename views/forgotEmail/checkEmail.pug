@@ -1,4 +1,4 @@
-extends base
+extends ../base
 
 block append head
   //- script(defer src="/js/login.js")
@@ -8,10 +8,10 @@ block content
 
   main.main
     .login-form
-      h2.heading-secondary.ma-bt-lg Enter your e-mail to reset your password
+      h2.heading-secondary.ma-bt-lg Check your e-mail to rest your password
       form.form#forgot-password
         .form__group
-          label.form__label(for='email') Email address
+          label.form__label(for='email') Did not get an e-mail?
           input#email.form__input(type='email', placeholder='you@example.com', required)
         .form__group
-          button.btn.btn--green Forgot password
+          button.btn.btn--green Send e-mail again
