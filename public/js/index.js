@@ -3,6 +3,7 @@ import { login, logout, signup } from './login.js';
 import { forgotPassword, resetPassword } from './resetPassword.js';
 import { displayMap } from './mapbox.js';
 import { updateSettings } from './updateSettings.js';
+import { bookTour } from './stripe.js';
 
 // ******* DOM ELEMENTS
 const mapBoxContainer = document.getElementById('map');
@@ -13,6 +14,7 @@ const forgotPasswordForm = document.querySelector('#forgot-password');
 const resetPasswordForm = document.querySelector('#reset-password');
 const updatePasswordForm = document.querySelector('.form-user-settings');
 const userDataForm = document.querySelector('.form-user-data');
+const bookBtn = document.querySelector('#book-tour');
 
 // ******* VALUES
 
@@ -33,7 +35,6 @@ if (forgotPasswordForm)
     const email = document.querySelector('#email').value;
 
     forgotPassword(email);
-    
   });
 
 // RESET PASSWORD FORM
@@ -118,3 +119,13 @@ if (updatePasswordForm)
 
     currentPassword.value = newPassword.value = confirmPassword.value = '';
   });
+
+// TOUR BOOKING
+
+if (bookBtn) {
+  bookBtn.addEventListener('click', (event) => {
+    event.target.textContent = 'Processing...';
+    const { tourId } = event.target.dataset;
+    bookTour(tourId);
+  });
+}

@@ -11,6 +11,7 @@ import tourRouter from './routes/tourRoutes.js';
 import userRouter from './routes/userRoutes.js';
 import reviewRouter from './routes/reviewRoutes.js';
 import viewRouter from './routes/viewRoutes.js';
+import bookingRouter from './routes/bookingRoutes.js';
 import AppError from './utils/appError.js';
 import globalErrorHandler from './controllers/errorController.js';
 import cookieParser from 'cookie-parser';
@@ -144,6 +145,7 @@ app.use('/', viewRouter);
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/reviews', reviewRouter);
+app.use('/api/v1/bookings/', bookingRouter);
 
 //app.all will handle errors for .get(), .path(), .post(), .delete(). If a route is not defined app.all will send an error the the app.use(globalErrorHandler) middleware.
 app.all('*', (req, res, next) => {
