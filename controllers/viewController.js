@@ -2,6 +2,7 @@ import Tour from '../models/tourModel.js';
 import User from '../models/userModel.js';
 import catchAsync from '../utils/catchAsync.js';
 import AppError from '../utils/appError.js';
+import Booking from '../models/bookingModel.js';
 
 // ALL TOURS PAGE
 
@@ -34,8 +35,8 @@ export const getTour = catchAsync(async (req, res, next) => {
 // SIGN UP
 
 export const getSignUpForm = (req, res) => {
-  res.status(200).render('signup', {title: 'Sign up'})
- }
+  res.status(200).render('signup', { title: 'Sign up' });
+};
 
 // USER LOGIN
 
@@ -45,15 +46,14 @@ export const getLoginForm = (req, res) => {
 
 // ******************************
 // ******************************
-// FORGOT PASSWORD 
+// FORGOT PASSWORD
 
 export const getForgotPassForm = (req, res) => {
-
   console.log(req);
   res
     .status(200)
     .render('forgotEmail/forgotPass', { title: 'Forgot password' });
-}
+};
 
 // RESET PASSWORD
 export const getResetPassForm = (req, res) => {
@@ -75,6 +75,16 @@ export const getResendEmailForm = (req, res) => {
 export const getAccount = catchAsync(async (req, res, next) => {
   // user data is already saved in the res.locals because of the protect route
   res.status(200).render('account', { title: 'Your Account' });
+});
+
+// GET MY TOURS
+
+export const getMyTours = catchAsync(async (req, res, next) => {
+  const bookings = await Booking.find({ user: req.user.id });
+  const tourIDs = bookings.map((el) => el.tour._id);
+  const tours = await Tour.find({ _id: { $in: tourIDs } });
+
+  res.status(200).render('overview', { title: 'My Tours', tours });
 });
 
 //UPDATE USER DATA - IF NOT USING API

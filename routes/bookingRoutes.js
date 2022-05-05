@@ -5,9 +5,22 @@ import * as authController from '../controllers/authController.js';
 const router = express.Router();
 
 router.get(
-  '/checkout-session/:tourID',
+  '/checkout-session/:tourId',
   authController.protect,
   bookingController.getCheckoutSession
 );
+
+router.use(authController.restrictTo('admin', 'lead-guide'));
+
+router
+  .route('/')
+  .get(bookingController.getAllBookings)
+  .post(bookingController.createOneBooking);
+
+router
+  .route('/:id')
+  .get(bookingController.getOneBooking)
+  .patch(bookingController.updateOneBooking)
+  .delete(bookingController.deleteOneBooking);
 
 export default router;

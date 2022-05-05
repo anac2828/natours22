@@ -1,4 +1,6 @@
 import Stripe from 'stripe';
+import * as factory from './handlerFactory.js';
+import Booking from '../models/bookingModel.js';
 import Tour from '../models/tourModel.js';
 import catchAsync from '../utils/catchAsync.js';
 
@@ -6,7 +8,7 @@ const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
 // This creates a session for the user to use to make a payment
 export const getCheckoutSession = catchAsync(async (req, res, next) => {
   // Get the currently booked tour
-  const tour = await Tour.findById(req.params.tourID);
+  const tour = await Tour.findById(req.params.tourId);
 
   // Create checkout session - This will show up on the front end on the checkout form.
   const session = await stripe.checkout.sessions.create({
@@ -33,3 +35,22 @@ export const getCheckoutSession = catchAsync(async (req, res, next) => {
   // send session to client
   res.status(200).json({ status: 'success', session });
 });
+
+export const createBookingCheckout = catchAsync(async (req, res, next) => {
+  // This is only TEMPORARY, because it's UNSECURE: everyone can make bookigns withou paying
+  const { tour, user, price } = req.query;
+
+  if (!tour && !user && !price) return next();
+
+  await Booking.create({ tour, user, price });
+
+  // redirect creates a new request
+  res.redirect(req.originalUrl.split('?')[0]);
+});
+
+// CRUD
+export const createOneBooking = factory.createOne(Booking);
+export const getAllBookings = factory.getAll(Booking);
+export const getOneBooking = factory.getOne(Booking);
+export const updateOneBooking = factory.updateOne(Booking);
+export const deleteOneBooking = factory.deleteOne(Booking);

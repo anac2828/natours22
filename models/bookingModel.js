@@ -27,12 +27,15 @@ const bookingSchema = new mongoose.Schema({
 });
 
 // Populate tour and user on a QUERY 
-bookingSchema.pre(/^find/, function (this) {
+bookingSchema.pre(/^find/, function (next) {
   // when you want to populate only some fields use the object options
   this.populate('user').populate({
     path: 'tour',
-    select: 'name'
-  })
- })
+    select: 'name',
+  });
+  next();
+});
 
-export const Booking = mongoose.model('Booking', bookingSchema);
+const Booking = mongoose.model('Booking', bookingSchema);
+
+export default Booking;
