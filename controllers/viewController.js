@@ -49,7 +49,7 @@ export const getLoginForm = (req, res) => {
 // FORGOT PASSWORD
 
 export const getForgotPassForm = (req, res) => {
-  console.log(req);
+
   res
     .status(200)
     .render('forgotEmail/forgotPass', { title: 'Forgot password' });

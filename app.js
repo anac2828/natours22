@@ -7,6 +7,9 @@ import mongoSanitize from 'express-mongo-sanitize';
 import xss from 'xss-clean';
 import hpp from 'hpp';
 import morgan from 'morgan';
+import cookieParser from 'cookie-parser';
+import compression from 'compression';
+// ****
 import tourRouter from './routes/tourRoutes.js';
 import userRouter from './routes/userRoutes.js';
 import reviewRouter from './routes/reviewRoutes.js';
@@ -14,7 +17,6 @@ import viewRouter from './routes/viewRoutes.js';
 import bookingRouter from './routes/bookingRoutes.js';
 import AppError from './utils/appError.js';
 import globalErrorHandler from './controllers/errorController.js';
-import cookieParser from 'cookie-parser';
 
 const __dirname = path.resolve();
 
@@ -46,54 +48,7 @@ const limiter = rateLimit({
 app.use('/api', limiter);
 
 // Sets security http headers - helmet() will return a function This should go at the beginning.
-// app.use(helmet())
-// app.use(helmet({
-//   contentSecurityPolicy: {
-//     directives: {
-//       defaultSrc: ["'self'", 'data:', 'blob:', 'https:', 'ws:'],
-//       baseUri: ["'self'"],
-//       fontSrc: ["'self'", 'https:', 'data:'],
-//       scriptSrc: [
-//         "'self'",
-//         'https:',
-//         'http:',
-//         'blob:',
-//         'https://*.mapbox.com',
-//         'https://js.stripe.com',
-//         'https://m.stripe.network',
-//         'https://*.cloudflare.com',
-//       ],
-//       frameSrc: ["'self'", 'https://js.stripe.com'],
-//       objectSrc: ["'none'"],
-//       styleSrc: ["'self'", 'https:', "'unsafe-inline'"],
-//       workerSrc: [
-//         "'self'",
-//         'data:',
-//         'blob:',
-//         'https://*.tiles.mapbox.com',
-//         'https://api.mapbox.com',
-//         'https://events.mapbox.com',
-//         'https://m.stripe.network',
-//       ],
-//       childSrc: ["'self'", 'blob:'],
-//       imgSrc: ["'self'", 'data:', 'blob:'],
-//       formAction: ["'self'"],
-//       connectSrc: [
-//         "'self'",
-//         "'unsafe-inline'",
-//         'data:',
-//         'blob:',
-//         'https://*.stripe.com',
-//         'https://*.mapbox.com',
-//         'https://*.cloudflare.com/',
-//         'https://bundle.js:*',
-//         'ws://127.0.0.1:*/',
-
-//       ],
-//       upgradeInsecureRequests: [],
-//     },
-//   },
-// }));
+if (process.env.NODE_ENV === 'production') app.use(helmet());
 
 // // // // // *************  BODY PARSER
 // limit that amount of data that comes in the body for security purposes.
@@ -125,12 +80,17 @@ app.use(
   })
 );
 
+//
+// COMPRESSES TEXT THAT IS SEND TO CLIENT (JSON)
+app.use(compression());
+//
+
 // // // // // // // // // // //
 // applies to every route because a route was not specified and it comes before the route handler
 app.use((req, res, next) => {
   // The time will be added to the request object and will be available on all requests
   req.requestTime = new Date().toLocaleString();
-console.log(res.locals);
+
   next();
 });
 
