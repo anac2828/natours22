@@ -82,7 +82,7 @@ app.use(
 
 //
 // COMPRESSES TEXT THAT IS SEND TO CLIENT (JSON)
-app.use(compression());
+// app.use(compression());
 //
 
 // // // // // // // // // // //
