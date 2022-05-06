@@ -48,7 +48,19 @@ const limiter = rateLimit({
 app.use('/api', limiter);
 
 // Sets security http headers - helmet() will return a function This should go at the beginning.
-if (process.env.NODE_ENV === 'production') app.use(helmet());
+if (process.env.NODE_ENV === 'production') {
+  app.use(
+    helmet.contentSecurityPolicy({
+      directives: {
+        defaultSrc: ["'self'", 'https:', 'http:', 'data:', 'ws:'],
+        baseUri: ["'self'"],
+        fontSrc: ["'self'", 'https:', 'http:', 'data:'],
+        scriptSrc: ["'self'", 'https:', 'http:', 'blob:'],
+        styleSrc: ["'self'", "'unsafe-inline'", 'https:', 'http:'],
+      },
+    })
+  );
+}
 
 // // // // // *************  BODY PARSER
 // limit that amount of data that comes in the body for security purposes.
