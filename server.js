@@ -39,11 +39,14 @@ mongoose
   });
 
 // ************ SERVER *************
+
+// THIS WILL RESULT IN A HEROKU ERROR - remove 'localhost'
+// const server = app.listen(PORT, 'localhost', () =>
+//   console.log(`Server started on ${PORT}`)
+// );
 // for heroku to work user process.env.PORT
 const PORT = process.env.PORT || 8000;
-const server = app.listen(PORT, 'localhost', () =>
-  console.log(`Server started on ${PORT}`)
-);
+const server = app.listen(PORT, () => console.log(`Server started on ${PORT}`));
 
 // UNHANDLED REJECTS
 
