@@ -41,7 +41,7 @@ mongoose
 // ************ SERVER *************
 // for heroku to work user process.env.PORT
 const PORT = process.env.PORT || 8000;
-const server = app.listen(PORT, 'localhost', () =>
+const server = app.listen(process.env.PORT, () =>
   console.log(`Server started on ${PORT}`)
 );
 
