@@ -4,7 +4,7 @@ import jwt from 'jsonwebtoken';
 import User from '../models/userModel.js';
 import catchAsync from '../utils/catchAsync.js';
 import AppError from '../utils/appError.js';
-import { Email } from '../utils/Email.js';
+import { Email } from '../utils/email.js';
 // import sendEmail from '../utils/email.js';
 import { createNSendToken } from '../utils/createToken.js';
 
