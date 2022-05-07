@@ -234,13 +234,13 @@ export const forgotPassword = catchAsync(async (req, res, next) => {
     user.passwordResetToken = undefined;
     user.passwordResetExpires = undefined;
     await user.save();
-
+console.log(error);
     return next(
       new AppError('There was an error sending the email. Try again later!')
     );
   }
 });
-
+// user forgot password and needs to reset it.
 export const resetPassword = catchAsync(async (req, res, next) => {
   // Find user with token sent to them. The token sent to use was not encrypted and reset token in the data is encrypted. Encryp user token to be able to find the user.
   const hashedToken = crypto
@@ -274,7 +274,7 @@ export const resetPassword = catchAsync(async (req, res, next) => {
 });
 
 ////////////////////////
-// ********** UPDATE PASSWORD
+// ********** UPDATE PASSWORD - user changes current password
 ////////////////////////
 
 export const updatePassword = catchAsync(async (req, res, next) => {

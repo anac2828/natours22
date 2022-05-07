@@ -24,11 +24,20 @@ export class Email {
 
       // return nodemailer.createTransport(sgTransport(sgOptions));
 
+      // return nodemailer.createTransport({
+      //   service: 'SendGrid',
+      //   auth: {
+      //     user: process.env.SENDGRID_USERNAME,
+      //     pass: process.env.SENDGRID_PASSWORD,
+      //   },
+      // });
+
+      // SEND IN BLUE *******
       return nodemailer.createTransport({
-        service: 'SendGrid',
+        host: 'smtp-relay.sendinblue.com',
         auth: {
-          user: process.env.SENDGRID_USERNAME,
-          pass: process.env.SENDGRID_PASSWORD,
+          user: process.env.SIB_USER,
+          pass: process.env.SIB_PASS,
         },
       });
     }
