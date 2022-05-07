@@ -3,9 +3,6 @@ import path from 'path';
 import express from 'express';
 import { rateLimit } from 'express-rate-limit';
 import helmet from 'helmet';
-import csp from 'express-csp';
-import cors from 'cors';
-// import corsMiddleware from './utils/cors.js';
 import mongoSanitize from 'express-mongo-sanitize';
 import xss from 'xss-clean';
 import hpp from 'hpp';
@@ -24,11 +21,6 @@ import globalErrorHandler from './controllers/errorController.js';
 const __dirname = path.resolve();
 
 const app = express();
-// app.use(
-//   cors({
-//     origin: 'https://api.mapbox.com/mapbox-gl-js/v2.8.2/mapbox-gl.css',
-//   })
-// );
 
 // ********** VIEW ENGINE
 app.set('view engine', 'pug');
@@ -62,11 +54,7 @@ if (process.env.NODE_ENV === 'production') {
   );
 }
 
-// app.use(
-//   cors({
-//     origin: 'https://api.mapbox.com/mapbox-gl-js/v2.8.2/mapbox-gl.css',
-//   })
-// );
+
 
 // // // // // *************  BODY PARSER
 // limit that amount of data that comes in the body for security purposes.
