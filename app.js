@@ -3,6 +3,9 @@ import path from 'path';
 import express from 'express';
 import { rateLimit } from 'express-rate-limit';
 import helmet from 'helmet';
+import csp from 'express-csp';
+import cors from 'cors';
+// import corsMiddleware from './utils/cors.js';
 import mongoSanitize from 'express-mongo-sanitize';
 import xss from 'xss-clean';
 import hpp from 'hpp';
@@ -21,6 +24,11 @@ import globalErrorHandler from './controllers/errorController.js';
 const __dirname = path.resolve();
 
 const app = express();
+// app.use(
+//   cors({
+//     origin: 'https://api.mapbox.com/mapbox-gl-js/v2.8.2/mapbox-gl.css',
+//   })
+// );
 
 // ********** VIEW ENGINE
 app.set('view engine', 'pug');
@@ -50,17 +58,15 @@ app.use('/api', limiter);
 // Sets security http headers - helmet() will return a function This should go at the beginning.
 if (process.env.NODE_ENV === 'production') {
   app.use(
-    helmet.contentSecurityPolicy({
-      directives: {
-        defaultSrc: ["'self'", 'https:', 'http:', 'data:', 'ws:'],
-        baseUri: ["'self'"],
-        fontSrc: ["'self'", 'https:', 'http:', 'data:'],
-        scriptSrc: ["'self'", 'https:', 'http:', 'blob:'],
-        styleSrc: ["'self'", "'unsafe-inline'", 'https:', 'http:'],
-      },
-    })
+    helmet.referrerPolicy({ policy: ['strict-origin-when-cross-origin'] })
   );
 }
+
+// app.use(
+//   cors({
+//     origin: 'https://api.mapbox.com/mapbox-gl-js/v2.8.2/mapbox-gl.css',
+//   })
+// );
 
 // // // // // *************  BODY PARSER
 // limit that amount of data that comes in the body for security purposes.
@@ -94,7 +100,7 @@ app.use(
 
 //
 // COMPRESSES TEXT THAT IS SEND TO CLIENT (JSON)
-// app.use(compression());
+app.use(compression());
 //
 
 // // // // // // // // // // //
