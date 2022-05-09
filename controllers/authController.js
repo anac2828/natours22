@@ -33,7 +33,7 @@ export const signup = catchAsync(async (req, res, next) => {
   // // When a user is created they will be signed in.
   // res.status(201).json({ status: 'success', token, data: { user: newUser } });
 
-  createNSendToken(newUser, 201, res);
+  createNSendToken(newUser, 201, req, res);
 });
 
 export const login = catchAsync(async (req, res, next) => {
@@ -53,7 +53,7 @@ export const login = catchAsync(async (req, res, next) => {
   // const token = signToken(user._id);
   // res.status(200).json({ status: 'success', token });
 
-  createNSendToken(user, 200, res);
+  createNSendToken(user, 200, req, res);
 });
 
 //Used to render user name and photo when they sign in not to protect route
@@ -269,7 +269,7 @@ export const resetPassword = catchAsync(async (req, res, next) => {
 
   // res.status(200).json({ success: 'success', token });
 
-  createNSendToken(user, 200, res);
+  createNSendToken(user, 200, req, res);
 });
 
 ////////////////////////
@@ -293,5 +293,5 @@ export const updatePassword = catchAsync(async (req, res, next) => {
   //Log user in send JWT
   // const token = signToken(user._id);
   // res.status(200).json({ status: 'success', token });
-  createNSendToken(user, 200, res);
+  createNSendToken(user, 200, req, res);
 });

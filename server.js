@@ -58,3 +58,14 @@ process.on('unhandledRejection', (err) => {
     process.exit(1);
   });
 });
+
+// THIS WILL COME FROM HEROKU every 24 hours
+process.on('SIGTERM', () => {
+  console.log(
+    '***********SIGTERM RECEIVED. Shutting down gracefully.***********'
+  );
+  // closes server after all the request are handled
+  server.close(() => {
+    console.log('********* !!!!!Process ternimated!!!!! **********');
+  });
+});

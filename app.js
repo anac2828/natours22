@@ -8,6 +8,7 @@ import xss from 'xss-clean';
 import hpp from 'hpp';
 import morgan from 'morgan';
 import cookieParser from 'cookie-parser';
+// compresses code send to client
 import compression from 'compression';
 // ****
 import tourRouter from './routes/tourRoutes.js';
@@ -21,6 +22,10 @@ import globalErrorHandler from './controllers/errorController.js';
 const __dirname = path.resolve();
 
 const app = express();
+
+
+// enable trust proxy (heroku) so heroku will set the req.headers('x-forwarded-proto')
+app.enable('trust proxy')
 
 // ********** VIEW ENGINE
 app.set('view engine', 'pug');
