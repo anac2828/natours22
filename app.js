@@ -10,6 +10,7 @@ import morgan from 'morgan';
 import cookieParser from 'cookie-parser';
 // compresses code send to client
 import compression from 'compression';
+import cors from 'cors';
 // ****
 import tourRouter from './routes/tourRoutes.js';
 import userRouter from './routes/userRoutes.js';
@@ -23,26 +24,37 @@ const __dirname = path.resolve();
 
 const app = express();
 
-
 // enable trust proxy (heroku) so heroku will set the req.headers('x-forwarded-proto')
-app.enable('trust proxy')
+app.enable('trust proxy');
 
 // ********** VIEW ENGINE
 app.set('view engine', 'pug');
 app.set('views', `${__dirname}/views`);
+
+// **************************** GLOBAL MIDDLEWARE
+// Implement CORS - sets the Access-Control-Allow-Origin - will allow everyone to consume our API
+app.use(cors());
+
+// will only allow api to be comsumed from the domain set here if we had the api on a deferent domain
+// app.use(cors({origin: 'https://www.natours.com'}))
+
+// options is an http method like "POST, DELETE, UPDATE". This will allow all POST DELETE UPDATE methods
+app.options('*', cors());
 
 // // // // // // // // // // // ************** SERVING STATIC FILES
 // Gives access to the public folder in the url. The public folder is the root folder. It will only work for static files and will not go into subfolders.
 //http://localhost:3000/overview.html
 app.use(express.static(`${__dirname}/public`));
 
-// **************************** GLOBAL MIDDLEWARE
-//
 if (process.env.NODE_ENV === 'development')
   // will log info about the request on the terminal
   app.use(morgan('dev'));
 
 // ******* SECURY MIDDLEWARE
+
+// sets security HTTP headers - This should go at the beginning.
+app.use(helmet.referrerPolicy({ policy: ['strict-origin-when-cross-origin'] }));
+
 //// // // // Limits the amount of request to 100 per hour
 const limiter = rateLimit({
   max: 100,
@@ -51,15 +63,7 @@ const limiter = rateLimit({
 });
 
 app.use('/api', limiter);
-
-// Sets security http headers - helmet() will return a function This should go at the beginning.
-if (process.env.NODE_ENV === 'production') {
-  app.use(
-    helmet.referrerPolicy({ policy: ['strict-origin-when-cross-origin'] })
-  );
-}
-
-
+// 
 
 // // // // // *************  BODY PARSER
 // limit that amount of data that comes in the body for security purposes.

@@ -20,6 +20,7 @@
     "bcrypt": "^5.0.1",
     "compression": "^1.7.4",
     "cookie-parser": "^1.4.6",
+    "cors": "^2.8.5",
     "dotenv": "^16.0.0",
     "express": "^4.17.2",
     "express-mongo-sanitize": "^2.2.0",
@@ -58,7 +59,7 @@
     "prettier": "^2.5.1"
   },
   "engines": {
-    "node": ">=16.14"
+    "node": "^16"
   },
   "comments": {
     "description": "parcel will bundle all js files used in the publics folder into the bundle.js file. Use --public-url /js to avoid bundle.js.map error"
