@@ -213,17 +213,19 @@ export const forgotPassword = catchAsync(async (req, res, next) => {
     // });
 
     // email link for user to reset password
+
     const resetURL = `${req.protocol}://${req.get(
       'host'
     )}/resetpassword/${resetToken}`;
 
+    console.log(resetURL);
     // const resetURL = `${req.protocol}://${req.get(
     //   'host'
     // )}/api/v1/users/resetPassword/${resetToken}`;
 
     await new Email(user, resetURL).sendPasswordReset();
-    res.locals.user = user;
-    res.locals.resetURL = resetURL;
+    // res.locals.user = user;
+    // res.locals.resetURL = resetURL;
 
     res.status(200).json({
       status: 'success',
@@ -234,7 +236,6 @@ export const forgotPassword = catchAsync(async (req, res, next) => {
     user.passwordResetToken = undefined;
     user.passwordResetExpires = undefined;
     await user.save();
-console.log(error);
     return next(
       new AppError('There was an error sending the email. Try again later!')
     );

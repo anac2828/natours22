@@ -34,6 +34,7 @@ export class Email {
 
       // SEND IN BLUE *******
       return nodemailer.createTransport({
+        service: 'SendinBlue',
         host: 'smtp-relay.sendinblue.com',
         auth: {
           user: process.env.SIB_USER,
