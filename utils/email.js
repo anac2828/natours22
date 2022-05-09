@@ -50,7 +50,7 @@ export class Email {
         user: process.env.EMAIL_USERNAME,
         pass: process.env.EMAIL_PASSWORD,
       },
-      // Activate in gmail 'less secure app' aption
+      // Activate in gmail 'less secure app' option
     });
   }
 
