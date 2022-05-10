@@ -65,13 +65,14 @@ export const webhookCheckout = (req, res, next) => {
   // TRY-CATCH is blocked scoped. Put event variable outside
   let event;
   try {
+    console.log(req.headers['stripe-signature']);
     // Stripe will add the signature to the headers when it calls the webhook
     const signature = req.headers['stripe-signature'];
     // req.body needs to be in a raw form (stream)
     event = stripe.webhooks.constructEvent(
       req.body,
       signature,
-      process.env.STIPE_WEBHOOK_SECRET
+      process.env.STRIPE_WEBHOOK_SECRET
     );
 
     console.log(event);
