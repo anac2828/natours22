@@ -27,7 +27,9 @@ export const getCheckoutSession = catchAsync(async (req, res, next) => {
       {
         name: `${tour.name} Tour`,
         description: tour.summary,
-        images: [`https://www.natours.dev/img/tours/${tour.imageCover}`],
+        images: [
+          `${req.protocol}://${req.get('host')}/img/tours/${tour.imageCover}`,
+        ],
         amount: tour.price * 100,
         currency: 'usd',
         quantity: 1,
@@ -54,7 +56,7 @@ export const getCheckoutSession = catchAsync(async (req, res, next) => {
 const createBookingCheckout = async (session) => {
   const tour = session.client_reference_id;
   const user = (await User.findOne({ email: session.customer_email })).id;
-  const price = session.line_items[0].amount / 100;
+  const price = session.display_items[0].amount / 100;
 
   await Booking.create({ tour, user, price });
 };
@@ -64,7 +66,7 @@ export const webhookCheckout = (req, res, next) => {
   let event;
   try {
     // Stripe will add the signature to the headers when it calls the webhook
-    const signature = req.headers('stripe-signature');
+    const signature = req.headers['stripe-signature'];
     // req.body needs to be in a raw form (stream)
     event = stripe.webhooks.constructEvent(
       req.body,
