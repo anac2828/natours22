@@ -77,7 +77,7 @@ export const webhookCheckout = (req, res, next) => {
     console.log(event);
   } catch (error) {
     // error will be sent to STRIPE
-    return res.status(400).send(`Webhook error: ${err.message}`);
+    return res.status(400).send(`Webhook error: ${error.message}`);
   }
   // EVENT FROM STRIPE
   if (event.type === 'checkout.session.completed')
