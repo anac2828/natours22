@@ -5,12 +5,12 @@ import * as bookingController from '../controllers/bookingController.js';
 
 const router = express.Router();
 
-// router.get(
-//   '/',
-//   bookingController.createBookingCheckout,
-//   authController.isLoggedIn,
-//   viewController.getOverview
-// );
+router.get(
+  '/',
+  // bookingController.createBookingCheckout,
+  authController.isLoggedIn,
+  viewController.getOverview
+);
 router.get('/tour/:slug', authController.isLoggedIn, viewController.getTour);
 
 router.get('/signup', viewController.getSignUpForm);
