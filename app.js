@@ -19,6 +19,7 @@ import viewRouter from './routes/viewRoutes.js';
 import bookingRouter from './routes/bookingRoutes.js';
 import AppError from './utils/appError.js';
 import globalErrorHandler from './controllers/errorController.js';
+import bookingController from './controllers/bookingController.js';
 
 const __dirname = path.resolve();
 
@@ -63,14 +64,21 @@ const limiter = rateLimit({
 });
 
 app.use('/api', limiter);
-// 
+
+//STRIPE WEBHOOK - We need the body to be in raw form so it needs to be before the body parser. The body parse will than convert it to JSON an added to request.body
+
+app.post(
+  '/webhook-checkout',
+  express.raw({ type: 'application/json' }),
+  bookingController.webhookCheckout
+);
 
 // // // // // *************  BODY PARSER
 // limit that amount of data that comes in the body for security purposes.
 // gets access to the body in request
 app.use(express.json({ limit: '10kb' }));
 // get access to form data not using the API request. Use extends true for more complex data submition
-app.use(express.urlencoded({ extends: true, limit: '10kb' }));
+app.use(express.urlencoded({ extended: true, limit: '10kb' }));
 // gets access to the cookie in a request when a user logs in
 app.use(cookieParser());
 

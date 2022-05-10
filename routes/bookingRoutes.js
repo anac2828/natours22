@@ -4,6 +4,7 @@ import * as authController from '../controllers/authController.js';
 
 const router = express.Router();
 
+// front end route
 router.get(
   '/checkout-session/:tourId',
   authController.protect,
@@ -12,10 +13,7 @@ router.get(
 
 router.use(authController.restrictTo('admin', 'lead-guide'));
 
-router
-  .route('/')
-  .get(bookingController.getAllBookings)
-  .post(bookingController.createOneBooking);
+router.route('/').get(bookingController.getAllBookings);
 
 router
   .route('/:id')

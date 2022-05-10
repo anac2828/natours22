@@ -1,10 +1,12 @@
 import Stripe from 'stripe';
 import * as factory from './handlerFactory.js';
+import catchAsync from '../utils/catchAsync.js';
 import Booking from '../models/bookingModel.js';
 import Tour from '../models/tourModel.js';
-import catchAsync from '../utils/catchAsync.js';
+import User from '../models/userModel.js';
 
 const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
+
 // This creates a session for the user to use to make a payment
 export const getCheckoutSession = catchAsync(async (req, res, next) => {
   // Get the currently booked tour
@@ -15,11 +17,13 @@ export const getCheckoutSession = catchAsync(async (req, res, next) => {
     payment_method_types: ['card'],
     // if the user made a successful transaction they will be redirected to the homepage
     // req.params comes from when the user submits the request
-    success_url: `${req.protocol}://${req.get('host')}/?tour=${
-      req.params.tourId
-    }&user=${req.user.id}&price=${tour.price}`,
+    // success_url: `${req.protocol}://${req.get('host')}/?tour=${
+    //   req.params.tourId
+    // }&user=${req.user.id}&price=${tour.price}`,
+    success_url: `${req.protocol}://${req.get('host')}/my-tours}`,
     cancel_url: `${req.protocol}://${req.get('host')}/tour/${tour.slug}`,
     customer_email: req.user.email,
+    client_reference_id: req.params.tourId,
     line_items: [
       {
         name: `${tour.name} Tour`,
@@ -36,17 +40,49 @@ export const getCheckoutSession = catchAsync(async (req, res, next) => {
   res.status(200).json({ status: 'success', session });
 });
 
-export const createBookingCheckout = catchAsync(async (req, res, next) => {
-  // This is only TEMPORARY, because it's UNSECURE: everyone can make bookigns withou paying
-  const { tour, user, price } = req.query;
+// export const createBookingCheckout = catchAsync(async (req, res, next) => {
+//   // This is only TEMPORARY, because it's UNSECURE: everyone can make bookigns withou paying
+//   const { tour, user, price } = req.query;
 
-  if (!tour && !user && !price) return next();
+//   if (!tour && !user && !price) return next();
+
+//   await Booking.create({ tour, user, price });
+
+//   // redirect creates a new request
+//   res.redirect(req.originalUrl.split('?')[0]);
+// });
+
+const createBookingCheckout = (session) => {
+  const tour = session.client_reference_id;
+  const user = (await User.findOne({ email: session.customer_email })).id;
+  const price = session.line_items[0].amount / 100;
 
   await Booking.create({ tour, user, price });
+};
 
-  // redirect creates a new request
-  res.redirect(req.originalUrl.split('?')[0]);
-});
+export const webhookCheckout = (req, res, next) => {
+  // TRY-CATCH is blocked scoped. Put event variable outside
+  let event;
+  try {
+    // Stripe will add the signature to the headers when it calls the webhook
+    const signature = req.headers('stripe-signature');
+    // req.body needs to be in a raw form (stream)
+    event = stripe.webhooks.constructEvent(
+      req.body,
+      signature,
+      process.env.STIPE_WEBHOOK_SECRET
+    );
+  } catch (error) {
+    // error will be sent to STRIPE
+    return res.status(400).send(`Webhook error: ${err.message}`);
+  }
+  // EVENT FROM STRIPE
+  if (event.type === 'checkout.session.complete')
+    // will create the booking on MONGODB
+    createBookingCheckout(event.data.object);
+
+  res.status(200).json({ received: true });
+};
 
 // CRUD
 export const createOneBooking = factory.createOne(Booking);
