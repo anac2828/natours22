@@ -19,7 +19,7 @@ import viewRouter from './routes/viewRoutes.js';
 import bookingRouter from './routes/bookingRoutes.js';
 import AppError from './utils/appError.js';
 import globalErrorHandler from './controllers/errorController.js';
-import bookingController from './controllers/bookingController.js';
+import * as bookingController from './controllers/bookingController.js';
 
 const __dirname = path.resolve();
 
