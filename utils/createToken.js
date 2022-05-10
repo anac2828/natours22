@@ -13,6 +13,7 @@ const signToken = (id) => {
 export const createNSendToken = (user, statusCode, req, res) => {
   const token = signToken(user._id);
 
+  console.log(req.headers);
   // create and send a cookie to browser when a user signs in. Expires in 90 days (converted to milliseconds). The cookie is the token
   res.cookie('jwt', token, {
     expires: new Date(
