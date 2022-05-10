@@ -11,7 +11,6 @@ const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
 export const getCheckoutSession = catchAsync(async (req, res, next) => {
   // Get the currently booked tour
   const tour = await Tour.findById(req.params.tourId);
-
   // Create checkout session - This will show up on the front end on the checkout form.
   const session = await stripe.checkout.sessions.create({
     payment_method_types: ['card'],
@@ -20,7 +19,7 @@ export const getCheckoutSession = catchAsync(async (req, res, next) => {
     // success_url: `${req.protocol}://${req.get('host')}/?tour=${
     //   req.params.tourId
     // }&user=${req.user.id}&price=${tour.price}`,
-    success_url: `${req.protocol}://${req.get('host')}/my-tours}`,
+    success_url: `${req.protocol}://${req.get('host')}/my-tours`,
     cancel_url: `${req.protocol}://${req.get('host')}/tour/${tour.slug}`,
     customer_email: req.user.email,
     client_reference_id: req.params.tourId,
@@ -72,12 +71,14 @@ export const webhookCheckout = (req, res, next) => {
       signature,
       process.env.STIPE_WEBHOOK_SECRET
     );
+
+    console.log(event);
   } catch (error) {
     // error will be sent to STRIPE
     return res.status(400).send(`Webhook error: ${err.message}`);
   }
   // EVENT FROM STRIPE
-  if (event.type === 'checkout.session.complete')
+  if (event.type === 'checkout.session.completed')
     // will create the booking on MONGODB
     createBookingCheckout(event.data.object);
 

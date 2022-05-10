@@ -20,7 +20,7 @@ router.get('/forgotpassword', viewController.getForgotPassForm);
 router.get('/resetpassword/:resetToken', viewController.getResetPassForm);
 router.get('/checkemail', viewController.getResendEmailForm);
 router.get('/me', authController.protect, viewController.getAccount);
-router.get('/mytours', authController.protect, viewController.getMyTours);
+router.get('/my-tours', authController.protect, viewController.getMyTours);
 // END POINT TO SUBMIT USER DATA UPDATE FORM WHEN NOT USING API
 // router.post(
 //   '/update-user-data',

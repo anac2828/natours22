@@ -27,7 +27,6 @@ export const createNSendToken = (user, statusCode, req, res) => {
     secure: req.secure || req.headers['x-forwarded-proto'] === 'https',
   });
 
-  console.log(res);
   // remove password from output
   user.password = undefined;
   res.status(statusCode).json({ status: 'success', token, data: { user } });
