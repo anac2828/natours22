@@ -13,7 +13,6 @@ const signToken = (id) => {
 export const createNSendToken = (user, statusCode, req, res) => {
   const token = signToken(user._id);
 
-  console.log(req.headers);
   // create and send a cookie to browser when a user signs in. Expires in 90 days (converted to milliseconds). The cookie is the token
   res.cookie('jwt', token, {
     expires: new Date(
@@ -25,9 +24,10 @@ export const createNSendToken = (user, statusCode, req, res) => {
 
     // THIS TEST IF THE CONNECTION IS SECURE WHEN APP IS DEPLOYED TO HEROKU
     // req.secure = true or heroku sets the header 'x-forwarded-proto'
-    secure: req.secure || req.headers('x-forwarded-proto') === 'https',
+    secure: req.secure || req.headers['x-forwarded-proto'] === 'https',
   });
 
+  console.log(res);
   // remove password from output
   user.password = undefined;
   res.status(statusCode).json({ status: 'success', token, data: { user } });
