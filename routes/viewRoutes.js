@@ -4,7 +4,8 @@ import * as authController from '../controllers/authController.js';
 import * as bookingController from '../controllers/bookingController.js';
 
 const router = express.Router();
-
+// This middleware will run on all request on the views route
+router.use(viewController.alerts)
 router.get(
   '/',
   // bookingController.createBookingCheckout,

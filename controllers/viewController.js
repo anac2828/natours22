@@ -4,6 +4,15 @@ import catchAsync from '../utils/catchAsync.js';
 import AppError from '../utils/appError.js';
 import Booking from '../models/bookingModel.js';
 
+// This alert will be accessiable on pug templates. (STRIPE WEBKHOOK WORKAROUND)
+export const alerts = (req, res, next) => {
+  const { alert } = req.query;
+  if (alert === 'booking')
+    res.locals.alert =
+      "Your booking was successful! Please check your email for a confirmation. If your booking doesn't show up here immediatly, please come back later.";
+  next();
+};
+
 // ALL TOURS PAGE
 
 export const getOverview = catchAsync(async (req, res, next) => {

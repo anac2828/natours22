@@ -4,6 +4,7 @@ import { forgotPassword, resetPassword } from './resetPassword.js';
 import { displayMap } from './mapbox.js';
 import { updateSettings } from './updateSettings.js';
 import { bookTour } from './stripe.js';
+import { showAlert } from './showAlerts.js';
 
 // ******* DOM ELEMENTS
 const mapBoxContainer = document.getElementById('map');
@@ -129,3 +130,6 @@ if (bookBtn) {
     bookTour(tourId);
   });
 }
+
+const alertMessage = document.querySelector('body').dataset.alert;
+if (alertMessage) showAlert('success', alertMessage, 20);

@@ -4,10 +4,10 @@ export const hideAlert = () => {
   if (alert) alert.parentElement.removeChild(alert);
 };
 
-export const showAlert = (type, msg) => {
+export const showAlert = (type, msg, time = 7) => {
   const markup = `<div class="alert alert--${type}">${msg}</div>`;
 
   // afterbegin will insert the markup at the top of the body tag
   document.querySelector('body').insertAdjacentHTML('afterbegin', markup);
-  window.setTimeout(hideAlert, 5000);
+  window.setTimeout(hideAlert, time * 1000);
 };;
