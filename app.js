@@ -1,3 +1,4 @@
+// add "type": "module" to package.json for import to work
 // solution for __dirname is not defined in ES module scope error
 import path from 'path';
 import express from 'express';
