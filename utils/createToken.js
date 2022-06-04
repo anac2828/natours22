@@ -20,6 +20,7 @@ export const createNSendToken = (user, statusCode, req, res) => {
     ),
     // will only send the cookie over an https request
     // will prevent the browser from modifying the cookie. It will prevent cross-site attacks
+    // cannot delete or change with this option selected
     httpOnly: true,
 
     // THIS TEST IF THE CONNECTION IS SECURE WHEN APP IS DEPLOYED TO HEROKU

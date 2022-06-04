@@ -18,6 +18,8 @@ export const signup = catchAsync(async (req, res, next) => {
 
   // SECURITY BUG - Don't use this code. A user could sign up as an admin
   // const newUser = await User.create(req.body);
+
+  // Safe code to use
   const newUser = await User.create({
     name: req.body.name,
     email: req.body.email,
@@ -27,6 +29,7 @@ export const signup = catchAsync(async (req, res, next) => {
     role: req.body.role || 'user',
   });
 
+  // Welcome email
   await new Email(newUser, url).sendWelcome();
 
   // const token = signToken(newUser._id);
@@ -99,8 +102,11 @@ export const isLoggedIn = async (req, res, next) => {
 };
 
 export const logout = (req, res, next) => {
+  // overwrite cookie with no token to logout user
   res.cookie('jwt', 'Logged out', {
+    // will expire 10 seconds
     expires: new Date(Date.now() + 10 * 1000),
+    // cannot delete or change with this option selected
     httpOnly: true,
   });
   res.status(200).json({ status: 'success' });

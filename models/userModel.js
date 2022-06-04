@@ -11,7 +11,7 @@ const userSchema = new mongoose.Schema({
   },
   email: {
     type: String,
-    require: [true, 'Please provide your email '],
+    require: [true, 'Please provide your email'],
     unique: true,
     lowercase: true,
     validate: [validator.isEmail, 'Please provide a valid email.'],
@@ -57,13 +57,13 @@ const userSchema = new mongoose.Schema({
 // ******************** MIDDLEWARE
 
 userSchema.pre('save', async function (next) {
-  // "this" is the current document. If the password is not modified code the next middleware will run.
+  // "this" is the current document. If the password is not modified, the next middleware will run.
   if (!this.isModified('password')) return next();
   // The higher the number the better encrypted the password will be but the more cpu instensive thre process will be
   // A promise will be returned
   this.password = await bcrypt.hash(this.password, 12);
 
-  // Setting the passwordConfirm to undefined will be deleted from the data. We only need this field for password validation
+  // Setting the passwordConfirm to undefined will delete it from the data. We only need this field for password validation
   this.passwordConfirm = undefined;
   next();
 });

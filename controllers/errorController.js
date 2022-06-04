@@ -41,9 +41,10 @@ const sendErrDev = (err, req, res) => {
   // BROWSER ERROR HANDLER
   console.error(`ERROR *****`, err);
   // This is render the error page for the client using the error.pug file
-  return res
-    .status(err.statusCode)
-    .render('error', { title: 'Somthing went wrong!', msg: err.message });
+  return res.render('error', {
+    title: 'Somthing went wrong!',
+    msg: err.message,
+  });
 };
 
 const sendErrProd = (err, req, res) => {
