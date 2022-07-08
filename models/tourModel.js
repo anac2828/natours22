@@ -149,7 +149,7 @@ tourSchema.index({ startLocation: '2dsphere' });
 // VIRTUAL PROPERTIES
 
 tourSchema.virtual('durationWeeks').get(function () {
-  // "this" points to the current document
+  // "this" points to the current document. Result will be safed to the 'durationWeeks' field
   return this.duration / 7;
 });
 
