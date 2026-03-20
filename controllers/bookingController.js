@@ -73,8 +73,6 @@ export const webhookCheckout = (req, res, next) => {
       signature,
       process.env.STRIPE_WEBHOOK_SECRET
     );
-
-    console.log(event);
   } catch (error) {
     // error will be sent to STRIPE
     return res.status(400).send(`Webhook error: ${error.message}`);

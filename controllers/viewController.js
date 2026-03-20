@@ -13,17 +13,18 @@ export const alerts = (req, res, next) => {
   next();
 };
 
-// ALL TOURS PAGE
+//**  ALL TOURS PAGE
 
 export const getOverview = catchAsync(async (req, res, next) => {
   // Get tour data
   const tours = await Tour.find();
+
   //Build template
   //Render template
   res.status(200).render('overview', { title: 'All Tours', tours });
 });
 
-// TOUR DETAILS PAGE
+//** TOUR DETAILS PAGE
 
 export const getTour = catchAsync(async (req, res, next) => {
   // Get tour data
@@ -58,7 +59,6 @@ export const getLoginForm = (req, res) => {
 // FORGOT PASSWORD
 
 export const getForgotPassForm = (req, res) => {
-
   res
     .status(200)
     .render('forgotEmail/forgotPass', { title: 'Forgot password' });

@@ -22,7 +22,7 @@ const router = express.Router();
 //     reviewController.createReview
 //   );
 
-// MIDDLEWARE - this route will be redirected to the viewRouter
+//** MIDDLEWARE - this route will be redirected to the viewRouter
 router.use('/:tourId/reviews', reviewRouter);
 
 //********* ROUTES

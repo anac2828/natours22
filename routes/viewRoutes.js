@@ -4,15 +4,18 @@ import * as authController from '../controllers/authController.js';
 import * as bookingController from '../controllers/bookingController.js';
 
 const router = express.Router();
-// This middleware will run on all request on the views route
-router.use(viewController.alerts)
+//**  This middleware will run on all request on the views route
+router.use(viewController.alerts);
 
+// ** INDEX route shows all tours
 router.get(
   '/',
   // bookingController.createBookingCheckout,
   authController.isLoggedIn,
   viewController.getOverview
 );
+
+//** GET ONE TOUR
 router.get('/tour/:slug', authController.isLoggedIn, viewController.getTour);
 
 router.get('/signup', viewController.getSignUpForm);

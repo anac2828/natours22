@@ -1,13 +1,13 @@
 import 'babel-polyfill';
 import { login, logout, signup } from './login.js';
 import { forgotPassword, resetPassword } from './resetPassword.js';
-import { displayMap } from './mapbox.js';
+
 import { updateSettings } from './updateSettings.js';
 import { bookTour } from './stripe.js';
 import { showAlert } from './showAlerts.js';
 
 // ******* DOM ELEMENTS
-const mapBoxContainer = document.getElementById('map');
+
 const loginForm = document.querySelector('#login-form');
 const signupForm = document.querySelector('#signup-form');
 const logoutBtn = document.querySelector('.nav__el--logout');
@@ -20,13 +20,6 @@ const bookBtn = document.querySelector('#book-tour');
 // ******* VALUES
 
 // ********** DELEGATION
-
-//DISPLAY MAP IN TOUR DETAILS PAGE
-
-if (mapBoxContainer) {
-  const locations = JSON.parse(mapBoxContainer.dataset.locations);
-  displayMap(locations);
-}
 
 // FORGOT PASSWORD FORM
 if (forgotPasswordForm)

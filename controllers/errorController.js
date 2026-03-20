@@ -11,6 +11,7 @@ const handleCastErrorDB = (err) => {
 const handleDuplicateFieldDB = (err) => {
   const value = err.message.match(/(["])(\\?.)*?\1/)[0];
   const message = `Duplicate field value: ${value}. Please use another value!`;
+
   return new AppError(message, 400);
 };
 
@@ -93,6 +94,7 @@ export default (err, req, res, next) => {
   err.status = err.status || 'error';
   err.statusCode = err.statusCode || 500;
 
+  console.log('ERROR CONTROLLER', err);
   if (process.env.NODE_ENV === 'development') {
     sendErrDev(err, req, res);
   }

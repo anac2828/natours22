@@ -9,7 +9,6 @@ const signToken = (id) => {
   });
 };
 
-
 export const createNSendToken = (user, statusCode, req, res) => {
   const token = signToken(user._id);
 

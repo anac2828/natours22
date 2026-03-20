@@ -554,25 +554,16 @@ body {
   width: 100%;
 }
 
-.marker {
-  background-image: url('../img/pin.png');
-  background-size: cover;
-  width: 32px;
-  height: 40px;
-  cursor: pointer;
-}
-
-.mapboxgl-popup {
-  max-width: 25rem;
-}
-
-.mapboxgl-popup-content {
-  text-align: center;
+.leaflet-popup .leaflet-popup-content-wrapper {
+  background-color: #444;
+  color: #e0e0e0;
+  border-radius: 5px;
   font-family: 'Lato', sans-serif;
-  padding: 1.5rem !important;
+  font-weight: 00;
   font-size: 1.4rem;
-  -webkit-box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.15) !important;
-  box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.15) !important;
+}
+.leaflet-popup .leaflet-popup-tip{
+  background-color: #444;
 }
 
 .section-reviews {

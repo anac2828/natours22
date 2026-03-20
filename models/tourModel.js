@@ -190,6 +190,7 @@ tourSchema.pre('save', function () {
 tourSchema.pre(/^find/, function (next) {
   // To "this" query we can chain another find() query
   this.find({ secretTour: false });
+
   //This will be added to the query object
   this.start = Date.now();
   next();

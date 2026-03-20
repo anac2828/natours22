@@ -5,6 +5,7 @@ import express from 'express';
 import { rateLimit } from 'express-rate-limit';
 import helmet from 'helmet';
 import mongoSanitize from 'express-mongo-sanitize';
+import { xss as xssSanitizer } from 'express-xss-sanitizer';
 import xss from 'xss-clean';
 import hpp from 'hpp';
 import morgan from 'morgan';
@@ -27,7 +28,7 @@ const __dirname = path.resolve();
 const app = express();
 
 // enable trust proxy (heroku) so heroku will set the req.headers('x-forwarded-proto')
-app.enable('trust proxy');
+// app.enable('trust proxy', false);
 
 // ********** VIEW ENGINE
 app.set('view engine', 'pug');
@@ -41,7 +42,7 @@ app.use(cors());
 // app.use(cors({origin: 'https://www.natours.com'}))
 
 // options is an http method like "POST, DELETE, UPDATE". This will allow all POST DELETE UPDATE methods
-app.options('*', cors());
+app.options('/*splat', cors());
 
 // // // // // // // // // // // ************** SERVING STATIC FILES
 // Gives access to the public folder in the url. The public folder is the root folder. It will only work for static files and will not go into subfolders.
@@ -85,10 +86,21 @@ app.use(cookieParser());
 
 // ******************* SECURITY
 // Data sanitization againts NoSQL query injection - Will remove '$' from a query
-app.use(mongoSanitize());
+// app.use((req, res, next) => {
+//   Object.defineProperty(req, 'query', {
+//     value: { ...req.query },
+//     writable: true,
+//     configurable: true,
+//     enumerable: true,
+//   });
+//   next();
+// });
+
+// app.use(xssSanitizer());
+// app.use(mongoSanitize());
 
 // Data sanitization againts CROSS SITE - cleans user input from malicious HTML input
-app.use(xss());
+// app.use(xss());
 
 // Prevent parameter polution  - will remove duplicate fields
 app.use(
@@ -120,7 +132,7 @@ app.use((req, res, next) => {
 
 // ********************* ROUTES MIDDLEWARE
 
-// FRONT END ROUTE
+//**** FRONT END ROUTE
 app.use('/', viewRouter);
 
 // Middleware for tours route
@@ -132,7 +144,7 @@ app.use('/api/v1/reviews', reviewRouter);
 app.use('/api/v1/bookings', bookingRouter);
 
 //app.all will handle errors for .get(), .path(), .post(), .delete(). If a route is not defined app.all will send an error the the app.use(globalErrorHandler) middleware.
-app.all('*', (req, res, next) => {
+app.all('/*splat', (req, res, next) => {
   // res.status(404).json({
   //   status: 'fail',
   //   // req.originalUrl is the url that was requested

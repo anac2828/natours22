@@ -1,23 +1,20 @@
 import 'dotenv/config.js';
 // import dotenv from 'dotenv';
 import { readFileSync } from 'fs';
-import { fileURLToPath } from 'url';
-import path from 'path';
+
 import mongoose from 'mongoose';
 import Tour from '../../models/tourModel.js';
 import User from '../../models/userModel.js';
 import Review from '../../models/reviewModel.js';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
+const __dirname = import.meta.dirname;
 // READ DATA
 const tours = JSON.parse(readFileSync(`${__dirname}/tours.json`, 'utf-8'));
 const users = JSON.parse(readFileSync(`${__dirname}/users.json`, 'utf-8'));
 const reviews = JSON.parse(readFileSync(`${__dirname}/reviews.json`, 'utf-8'));
 
 mongoose.connect(
-  'mongodb+srv://ana:natours2828@nodejs.viihm.mongodb.net/NodeJS?retryWrites=true&w=majority',
+  'mongodb+srv://anac2828:natours2828@natoursnodejs.c3noryz.mongodb.net/',
   () => console.log('Data connection successful!')
 );
 

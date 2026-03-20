@@ -88,7 +88,7 @@ reviewSchema.statics.calcAvgRatings = async function (tourId) {
 // Middleware for review documents after they are saved. Post middleware does not have access to next()
 reviewSchema.post('save', function () {
   // "this" points to the current document
-  // use this.contructor to call the medthod on the Model and not the document. Since "Review" variable has not been declared, we need to use this.contructor
+  // use this.contructor to call the method on the Model and not the document. Since "Review" variable has not been declared, we need to use this.contructor
   // In "this.tour" is the tourId
   this.constructor.calcAvgRatings(this.tour);
 });
